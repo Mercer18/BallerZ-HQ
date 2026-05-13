@@ -61,8 +61,8 @@ BallerZ HQ is your intelligent football companion that combines real football da
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/ballerz-hq.git
-cd ballerz-hq
+git clone https://github.com/Mercer18/BallerZ-HQ.git
+cd BallerZ-HQ
 ```
 
 ### 2. Database Setup (Supabase)
