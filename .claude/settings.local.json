@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py *)",
+      "Bash(./venv/Scripts/Activate.ps1)",
+      "Bash(pip install *)",
+      "Bash(./venv/Scripts/python.exe -m pip install -r requirements.txt)",
+      "Bash(npm list *)",
+      "Bash(where node *)",
+      "Read(//c/Users/rishi/scoop/apps/**)",
+      "Read(//c/Users/rishi/scoop/shims/**)",
+      "Bash(curl -L https://nodejs.org/dist/v20.11.0/node-v20.11.0-win-x64.zip -o \"/x/CODING/codingPlatforms/_downloads/node-v20.11.0-win-x64.zip\")",
+      "Bash(unzip -q node-v20.11.0-win-x64.zip -d \"../Nodejs\")",
+      "Bash(X:/CODING/codingPlatforms/Nodejs/node-v20.11.0-win-x64/node.exe *)",
+      "Bash(X:/CODING/codingPlatforms/Nodejs/node-v20.11.0-win-x64/npm.cmd *)",
+      "Bash(\"X:/CODING/codingPlatforms/Nodejs/node-v20.11.0-win-x64/npm.cmd\" install *)",
+      "Bash(export PATH=\"$PATH:/x/CODING/codingPlatforms/Nodejs/node-v20.11.0-win-x64\")",
+      "Bash(rm -rf node_modules package-lock.json)",
+      "Bash(npm install *)",
+      "Bash(./venv/Scripts/activate)",
+      "Bash(X:/CODING/PROJECTS/webdev/BallerZ HQ/backend/venv/Scripts/python.exe *)",
+      "Bash(\"X:/CODING/PROJECTS/webdev/BallerZ HQ/backend/venv/Scripts/python.exe\" -m pip install --upgrade pip)",
+      "Bash(\"X:/CODING/PROJECTS/webdev/BallerZ HQ/backend/venv/Scripts/python.exe\" -m pip install --upgrade pydantic pydantic-core)",
+      "Bash(\"X:/CODING/PROJECTS/webdev/BallerZ HQ/backend/venv/Scripts/python.exe\" -m pip install -r requirements.txt)",
+      "Bash(\"X:/CODING/PROJECTS/webdev/BallerZ HQ/backend/venv/Scripts/python.exe\" -m pip install fastapi==0.111.0 uvicorn[standard]==0.30.0 python-dotenv==1.0.1 supabase==2.4.3 httpx==0.27.0 openai==1.30.0 apscheduler==3.10.4 pydantic-settings)",
+      "Bash(./venv/Scripts/python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000)",
+      "Bash(npm run *)",
+      "Bash(curl *)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(taskkill //IM node.exe)",
+      "Bash(uvicorn main:app --reload)"
+    ]
+  }
+}
