@@ -92,7 +92,7 @@ export default function HeadToHeadPage() {
             <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><Swords className="w-5 h-5" /></div>
             <h1 className="font-serif font-semibold text-text-primary tracking-[-0.03em] leading-[0.92]" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.6rem)' }}>Head-to-Head</h1>
           </div>
-          <p className="text-sm text-text-secondary">Top-flight meetings only — Europe&apos;s big-5 leagues (no cups or lower divisions), 2010-11 to 2024-25.</p>
+          <p className="text-sm text-text-secondary">Top-flight meetings only — Europe&apos;s big-5 leagues (no cups or lower divisions), 2010-11 to 2025-26.</p>
         </div>
 
         <div className="card-terminal mb-5 p-5">

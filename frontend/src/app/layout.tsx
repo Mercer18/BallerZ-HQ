@@ -31,7 +31,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'BallerZ HQ | Your Club, Every Number',
-  description: 'Personalised football intelligence built on fifteen seasons of Europe\'s top five leagues. Standings, head-to-heads, club deep-dives, and Club IQ — an AI analyst grounded in real data.',
+  description: 'Personalised football intelligence built on sixteen seasons of Europe\'s top five leagues. Standings, head-to-heads, club deep-dives, and Club IQ — an AI analyst grounded in real data.',
   keywords: 'football, soccer, premier league, la liga, serie a, bundesliga, ligue 1, Club IQ, AI analyst, standings, head to head, stats',
 }
 

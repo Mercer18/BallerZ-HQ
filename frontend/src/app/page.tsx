@@ -95,10 +95,10 @@ function PageContent() {
   const featuresReveal = useReveal()
 
   // Counters
-  const matches = useCounter(27141)
-  const tables = useCounter(1466)
-  const players = useCounter(21708)
-  const seasons = useCounter(15)
+  const matches = useCounter(28892)
+  const tables = useCounter(1562)
+  const players = useCounter(25257)
+  const seasons = useCounter(16)
 
   // Custom Cursor logic
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -324,8 +324,8 @@ function PageContent() {
 
             {/* 01 — Match Browser */}
             <FCard ord="01" label="Match Analysis" title="Match Browser"
-              desc="Browse every match across 5 leagues and 15 seasons. Scores, lineups, referees, cards, corners, and xG timelines."
-              meta="15 seasons · 5 leagues">
+              desc="Browse every match across 5 leagues and 16 seasons. Scores, lineups, referees, cards, corners, and xG timelines."
+              meta="16 seasons · 5 leagues">
               <MiniWidget head="Match Feed" live>
                 <MiniRow tm="Arsenal vs Chelsea" val="3–1" />
                 <MiniRow tm="Real Madrid vs Barcelona" val="2–1" />
@@ -345,7 +345,7 @@ function PageContent() {
 
             {/* 03 — Head-to-Head */}
             <FCard ord="03" label="Club Comparison" title="Head-to-Head"
-              desc="Compare any two clubs across 15 seasons. Win rates, goal ratios, and outcome margins computed instantly.">
+              desc="Compare any two clubs across 16 seasons. Win rates, goal ratios, and outcome margins computed instantly.">
               <MiniWidget head="H2H Record" headRight="Last 10">
                 <MiniRow tm="Real Madrid Wins" val="5" />
                 <MiniRow tm="Draws" val="2" valClass="text-text-primary" />
@@ -377,9 +377,9 @@ function PageContent() {
 
             {/* 06 — Players (gold flagship) */}
             <FCard ord="06" gold label="Player Database" title="Player Stats"
-              desc="21,000+ player records from FBref — goals, assists, minutes, xG, progressive actions. Filter by league, season, or club."
+              desc="25,000+ player records from FBref — goals, assists, minutes, xG, progressive actions. Filter by league, season, or club."
               meta="Free now · Pro unlocks xG &amp; scouting">
-              <MiniWidget head="Top Scorers" headRight="2024-25">
+              <MiniWidget head="Top Scorers" headRight="2025-26">
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">1</span>Salah</>} val="19" />
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">2</span>Haaland</>} val="18" valClass="text-text-primary" />
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">3</span>Palmer</>} val="16" valClass="text-text-primary" />

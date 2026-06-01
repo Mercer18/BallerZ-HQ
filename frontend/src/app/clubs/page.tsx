@@ -14,7 +14,7 @@ interface SeasonStats {
 }
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL
-const SEASONS = Array.from({ length: 15 }, (_, i) => 2024 - i)
+const SEASONS = Array.from({ length: 16 }, (_, i) => 2025 - i)
 function seasonLabel(s: number) { return `${s}-${String(s + 1).slice(-2)}` }
 
 function ClubsContent() {
@@ -120,7 +120,7 @@ function ClubsContent() {
         ) : (
           <div>
             <h2 className="font-serif text-4xl sm:text-5xl font-semibold text-text-primary mb-2 tracking-[-0.02em] leading-none">{clubName}</h2>
-            <p className="font-mono text-xs text-text-muted mb-6 tracking-wide uppercase">{season ? `${seasonLabel(Number(season))} SEASON` : 'ALL SEASONS (2010-11 → 2024-25)'} · {stats.played} MATCHES</p>
+            <p className="font-mono text-xs text-text-muted mb-6 tracking-wide uppercase">{season ? `${seasonLabel(Number(season))} SEASON` : 'ALL SEASONS (2010-11 → 2025-26)'} · {stats.played} MATCHES</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatTile label="Points" value={stats.points} tone="emerald" />
               <StatTile label="Won" value={stats.won} />

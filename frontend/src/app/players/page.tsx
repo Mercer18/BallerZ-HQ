@@ -103,7 +103,7 @@ function PlayersContent() {
               </span>
             </h1>
           </div>
-          <p className="text-sm text-text-secondary">Top performers across Europe&apos;s top 5 leagues, powered by FBref data (2017-18 to 2024-25).</p>
+          <p className="text-sm text-text-secondary">Top performers across Europe&apos;s top 5 leagues, powered by FBref data (2017-18 to 2025-26).</p>
         </div>
 
         <div className="card-terminal mb-5 p-5">

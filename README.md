@@ -1,6 +1,6 @@
 # BallerZ HQ
 
-> **Your Club. Every Number.** Personalised football intelligence built on fifteen seasons of real results.
+> **Your Club. Every Number.** Personalised football intelligence built on sixteen seasons of real results.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript&logoColor=white)
@@ -14,7 +14,7 @@
 
 ## About
 
-BallerZ HQ is a full-stack football analytics platform covering Europe's top five leagues from 2010-11 to 2024-25. It combines a historical match database, computed league standings, player statistics, and an AI-powered club analyst — all running at zero cost on free-tier infrastructure.
+BallerZ HQ is a full-stack football analytics platform covering Europe's top five leagues from 2010-11 to 2025-26. It combines a historical match database, computed league standings, player statistics, and an AI-powered club analyst — all running at zero cost on free-tier infrastructure.
 
 The platform is designed around personalisation: you pick a club at onboarding, and the entire experience — dashboard stats, AI context, form tracking — reorients around that club. The AI analyst (Club IQ) is grounded in real data from the database and will only discuss facts it can verify, never hallucinating stats.
 
@@ -26,12 +26,12 @@ Built as a data-engineering and full-stack portfolio project to demonstrate end-
 
 | Dataset | Count | Source |
 |---------|-------|--------|
-| Matches | 27,141 | [football-data.co.uk](https://football-data.co.uk) CSVs |
-| Player stats | 21,761 | [FBref](https://fbref.com) via soccerdata |
-| Standings | 1,466 rows | Computed in-house from match results |
-| Clubs | 183 | Auto-created during ingestion |
+| Matches | 28,892 | [football-data.co.uk](https://football-data.co.uk) CSVs |
+| Player stats | 25,257 | [FBref](https://fbref.com) via soccerdata |
+| Standings | 1,562 rows | Computed in-house from match results |
+| Clubs | 186 | Auto-created during ingestion |
 | Leagues | 5 | Premier League, La Liga, Serie A, Bundesliga, Ligue 1 |
-| Seasons | 15 | 2010-11 to 2024-25 |
+| Seasons | 16 | 2010-11 to 2025-26 |
 
 Full per-match stats: scores, half-time scores, shots, shots on target, fouls, corners, yellow/red cards, referee.
 

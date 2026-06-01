@@ -86,6 +86,36 @@ FBREF_TEAM_MAP: Dict[str, str] = {
     "Evian Thonon Gaillard": "Evian Thonon Gaillard",
 }
 
+# football-data.co.uk short name -> our canonical DB club name (only where they differ).
+# Without this, the match ingest creates DUPLICATE club rows for teams the DB stores
+# under their full/FBref-style names (e.g. "Man City" vs "Manchester City"), severing
+# 2025-26 data from each club's history.
+FOOTBALLDATA_TEAM_MAP: Dict[str, str] = {
+    # Premier League
+    "Man City": "Manchester City",
+    "Man United": "Manchester United",
+    "Newcastle": "Newcastle United",
+    "Nott'm Forest": "Nottingham Forest",
+    # La Liga
+    "Ath Bilbao": "Athletic Club",
+    "Ath Madrid": "Atletico Madrid",
+    "Sociedad": "Real Sociedad",
+    "Betis": "Real Betis",
+    "Celta": "Celta Vigo",
+    "Espanol": "Espanyol",
+    "Vallecano": "Rayo Vallecano",
+    "Oviedo": "Real Oviedo",
+    # Serie A
+    "Milan": "AC Milan",
+    "Roma": "AS Roma",
+    "Inter": "Inter Milan",
+    # Bundesliga
+    "Dortmund": "Borussia Dortmund",
+    "Leverkusen": "Bayer Leverkusen",
+    # Ligue 1
+    "Paris SG": "Paris Saint Germain",
+}
+
 LEAGUE_MAP: Dict[str, dict] = {
     "E0":  {"name": "Premier League", "country": "England"},
     "SP1": {"name": "La Liga",        "country": "Spain"},
@@ -99,7 +129,7 @@ SEASON_CODE_TO_YEAR: Dict[str, int] = {
     "1011": 2010, "1112": 2011, "1213": 2012, "1314": 2013,
     "1415": 2014, "1516": 2015, "1617": 2016, "1718": 2017,
     "1819": 2018, "1920": 2019, "2021": 2020, "2122": 2021,
-    "2223": 2022, "2324": 2023, "2425": 2024,
+    "2223": 2022, "2324": 2023, "2425": 2024, "2526": 2025,
 }
 
 # ── Club name cache (name → internal id) ────────────────────────────
@@ -178,6 +208,10 @@ async def ingest_match_csv(filepath: str, league_code: str, season: int) -> int:
             away_team = row.get("AwayTeam", "").strip()
             if not home_team or not away_team:
                 continue
+
+            # Normalize football-data short names to our canonical club names
+            home_team = FOOTBALLDATA_TEAM_MAP.get(home_team, home_team)
+            away_team = FOOTBALLDATA_TEAM_MAP.get(away_team, away_team)
 
             home_id = _ensure_club(home_team, league_name, country)
             away_id = _ensure_club(away_team, league_name, country)

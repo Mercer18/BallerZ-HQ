@@ -120,7 +120,7 @@ function MatchesContent() {
   return (
     <div className="page-container app-bg pt-14">
       <main className="content-container">
-        <PageHeader icon={<Search className="w-5 h-5" />} title="Match Browser" subtitle="Every domestic-league result across Europe's top five leagues, 2010-11 to 2024-25." />
+        <PageHeader icon={<Search className="w-5 h-5" />} title="Match Browser" subtitle="Every domestic-league result across Europe's top five leagues, 2010-11 to 2025-26." />
 
         <div className="card-terminal mb-5 p-5">
           <div className="flex items-center gap-2 mb-4">
