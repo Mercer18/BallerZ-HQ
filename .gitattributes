@@ -1,0 +1,10 @@
+# Linguist overrides — exclude config/generated files from language stats
+tailwind.config.ts linguist-generated
+frontend/tsconfig.json linguist-generated
+frontend/next.config.js linguist-generated
+frontend/postcss.config.js linguist-generated
+frontend/next-env.d.ts linguist-generated
+package.json linguist-generated
+frontend/package.json linguist-generated
+frontend/package-lock.json linguist-generated
+database/*.sql linguist-detectable
