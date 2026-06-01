@@ -1,13 +1,14 @@
 # BallerZ HQ
 
-> **Your Club. Every Number.** Personalised football intelligence built on sixteen seasons of real results.
+> **Your Club. Every Number.** A personalized football intelligence platform. Dive deep into 16 seasons of top-flight statistics, simulate World Cup predictions, and chat with an AI analyst grounded strictly in real database records.
 
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-PostgreSQL%2017-4169E1?logo=postgresql&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=next.js&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688?logo=fastapi&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20DB-3FCF8E?logo=supabase&logoColor=white)
+![Hosting](https://img.shields.io/badge/hosting-Vercel%20%2B%20Render-blue)
 ![Cost](https://img.shields.io/badge/runtime-%240%2Fmonth-22c55e)
 
 ---
@@ -42,7 +43,7 @@ Full per-match stats: scores, half-time scores, shots, shots on target, fouls, c
 | Layer | Technology | Hosted on | Cost |
 |-------|------------|-----------|------|
 | Frontend | Next.js 14 + TypeScript + Tailwind | Vercel | $0 |
-| Backend | FastAPI (Python 3.10+) | Railway | $0 |
+| Backend | FastAPI (Python 3.13) | Render | $0 |
 | Database | Supabase (PostgreSQL 17 + Auth + RLS) | Supabase | $0 |
 | AI / LLM | Groq (LLaMA 3.3 70B) | Groq Cloud | $0 |
 | Data | football-data.co.uk + FBref CSVs | Local ingest | $0 |
@@ -74,7 +75,7 @@ Full per-match stats: scores, half-time scores, shots, shots on target, fouls, c
 ┌────────────┐    ┌────────────┐    ┌────────────┐
 │  Frontend  │───>│  Backend   │───>│  Supabase  │
 │  Next.js   │    │  FastAPI   │    │ PostgreSQL │
-│  (Vercel)  │    │ (Railway)  │    │  + Auth    │
+│  (Vercel)  │    │  (Render)  │    │  + Auth    │
 └────────────┘    └────────────┘    └────────────┘
                         │
                         v
@@ -213,7 +214,7 @@ ballerz-hq/
 
 - [x] Phase A — Data architecture: CSV ingestion, match database, standings computation
 - [x] Phase B — Frontend overhaul: dashboard, browse pages, Club IQ, player stats, design system
-- [ ] Phase C — Deployment: Vercel + Railway + production config
+- [x] Phase C — Deployment: Vercel + Render + production config
 - [ ] Phase D — Live season updates, gamification features
 
 ---
