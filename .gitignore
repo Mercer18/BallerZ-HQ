@@ -55,6 +55,7 @@ temp/
 # Large CSV data files (downloaded at setup, not committed)
 backend/data/matches/
 backend/data/players/
+backend/data/international/
 
 # Selenium / driver artifacts
 downloaded_files/

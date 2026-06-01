@@ -221,3 +221,49 @@ BEGIN
     RETURN found_email;
 END;
 $$;
+
+-- ============================================================
+-- International / World Cup 2026 (national teams + fixtures)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS national_teams (
+    id            SERIAL PRIMARY KEY,
+    name          TEXT NOT NULL UNIQUE,
+    code          TEXT,
+    confederation TEXT,            -- UEFA, CONMEBOL, CONCACAF, CAF, AFC, OFC
+    flag_emoji    TEXT,
+    elo_rating    NUMERIC DEFAULT 1500,   -- Match IQ rating (computed from int'l history)
+    wc_group      TEXT,            -- A..L for 2026 qualifiers
+    created_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS international_matches (
+    id            SERIAL PRIMARY KEY,
+    competition   TEXT NOT NULL DEFAULT 'FIFA World Cup',
+    edition_year  INT NOT NULL,
+    stage         TEXT,            -- group, round_of_32, ... final
+    group_name    TEXT,            -- A..L (group stage)
+    match_date    DATE,
+    home_team_id  INT REFERENCES national_teams(id),
+    away_team_id  INT REFERENCES national_teams(id),
+    home_score    INT,
+    away_score    INT,
+    venue_city    TEXT,
+    host_country  TEXT,
+    neutral       BOOLEAN DEFAULT false,
+    status        TEXT DEFAULT 'scheduled',   -- scheduled | finished
+    created_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_intl_matches_edition ON international_matches(edition_year);
+CREATE INDEX IF NOT EXISTS idx_intl_matches_group   ON international_matches(group_name);
+CREATE INDEX IF NOT EXISTS idx_intl_matches_teams   ON international_matches(home_team_id, away_team_id);
+CREATE INDEX IF NOT EXISTS idx_national_teams_conf  ON national_teams(confederation);
+
+ALTER TABLE national_teams        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE international_matches  ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "National teams are publicly readable"        ON national_teams        FOR SELECT TO public USING (true);
+CREATE POLICY "Allow service write on national_teams"       ON national_teams        FOR ALL    TO public USING (true) WITH CHECK (true);
+CREATE POLICY "International matches are publicly readable"  ON international_matches  FOR SELECT TO public USING (true);
+CREATE POLICY "Allow service write on international_matches" ON international_matches  FOR ALL    TO public USING (true) WITH CHECK (true);

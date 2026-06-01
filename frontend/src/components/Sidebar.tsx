@@ -12,6 +12,7 @@ import {
   Swords,
   BarChart3,
   Users,
+  Globe,
   MessageSquare,
   Crown,
   LogOut,
@@ -49,6 +50,7 @@ const NAV_ITEMS = [
   { name: 'H2H',       href: '/head-to-head', icon: Swords },
   { name: 'Clubs',     href: '/clubs',        icon: BarChart3 },
   { name: 'Players',   href: '/players',      icon: Users },
+  { name: 'World Cup', href: '/world-cup',    icon: Globe },
   { name: 'PRO',       href: '/premium',      icon: Crown },
 ]
 
