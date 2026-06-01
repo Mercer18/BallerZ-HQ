@@ -10,6 +10,8 @@ Builds a rich context from the user's tracked club:
 Then asks Groq to answer the user's question grounded in that context.
 """
 
+import re
+import unicodedata
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
@@ -75,7 +77,7 @@ async def chat(request: ChatRequest):
             raise HTTPException(429, f"Too many messages. Try again in {reset_in}s")
 
     # ── build context ────────────────────────────────────────────────
-    context = build_user_context(request.user_id) if request.user_id else {}
+    context = build_user_context(request.user_id, request.message) if request.user_id else {}
 
     # ── ask the model ────────────────────────────────────────────────
     response_text = generate_response(
@@ -87,7 +89,7 @@ async def chat(request: ChatRequest):
     return ChatResponse(response=response_text)
 
 
-def build_user_context(user_id: str) -> Dict[str, Any]:
+def build_user_context(user_id: str, message: str = "") -> Dict[str, Any]:
     """Pull everything we know about the user's club + give the LLM grounded data.
     Falls back to an empty context if the user hasn't completed onboarding."""
 
@@ -194,6 +196,13 @@ def build_user_context(user_id: str) -> Dict[str, Any]:
     if current_season is not None and current_season > 2010:
         context["prev_top_scorers"] = _top_players(club_id, current_season - 1, "goals")
 
+    # ── player stats by season (Tier 1) ─────────────────────────────
+    context["players_by_season"] = _players_by_season(club_id)
+
+    # ── specific-player detail from user query (Tier 2) ─────────────
+    if message:
+        context["queried_players"] = _match_player_in_message(club_id, message)
+
     return context
 
 
@@ -259,3 +268,112 @@ def _aggregate_season(club_id: int, season: int) -> Optional[Dict[str, Any]]:
         "points": w * 3 + d,
         "shots": sh, "yellow_cards": yc, "red_cards": rc,
     }
+
+
+def _normalize_string(s: str) -> str:
+    """Normalize string: lowercase, strip accents."""
+    s = s.lower().strip()
+    nfkd_form = unicodedata.normalize('NFKD', s)
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
+
+def _players_by_season(club_id: int, per_season: int = 3) -> Dict[int, List[Dict[str, Any]]]:
+    """Fetch top players for a club by season (top 3 scorers per season)."""
+    try:
+        res = (
+            supabase.table("player_stats")
+            .select("player_name, position, season, goals, assists, matches_played")
+            .eq("club_id", club_id)
+            .order("season", desc=True)
+            .execute()
+        )
+        if not res.data:
+            return {}
+
+        # Group by season
+        by_season: Dict[int, List[Dict[str, Any]]] = {}
+        for row in res.data:
+            s = row["season"]
+            if s not in by_season:
+                by_season[s] = []
+            by_season[s].append(row)
+
+        # For each season, sort by goals desc, then assists desc, and take top per_season
+        result: Dict[int, List[Dict[str, Any]]] = {}
+        for s, players in by_season.items():
+            sorted_players = sorted(
+                players,
+                key=lambda p: (p.get("goals") or 0, p.get("assists") or 0),
+                reverse=True
+            )
+            result[s] = sorted_players[:per_season]
+
+        return result
+    except Exception:
+        return {}
+
+
+def _match_player_in_message(club_id: int, message: str) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Search message for any player name associated with the club.
+    If matched, fetch their full multi-season stats.
+    Returns a dict: {player_name: [stats_rows]} (up to 2 players).
+    """
+    if not message:
+        return {}
+    try:
+        # Get all players for this club to match against
+        res = (
+            supabase.table("player_stats")
+            .select("player_name")
+            .eq("club_id", club_id)
+            .execute()
+        )
+        if not res.data:
+            return {}
+
+        # Distinct canonical names
+        player_names = sorted(list({r["player_name"] for r in res.data if r.get("player_name")}))
+
+        norm_message = _normalize_string(message)
+        message_words = set(re.findall(r'[a-z0-9]+', norm_message))
+
+        matched_names = []
+        for p_name in player_names:
+            norm_name = _normalize_string(p_name)
+            name_parts = [part for part in re.findall(r'[a-z0-9]+', norm_name) if part]
+            if not name_parts:
+                continue
+
+            last_name = name_parts[-1]
+
+            is_match = False
+            if norm_name in norm_message:
+                is_match = True
+            elif len(last_name) >= 3 and last_name in message_words:
+                is_match = True
+
+            if is_match:
+                matched_names.append(p_name)
+                if len(matched_names) >= 2:
+                    break
+
+        # For each matched player, fetch their full stats at the club
+        queried_players = {}
+        for p_name in matched_names:
+            stats = (
+                supabase.table("player_stats")
+                .select("season, goals, assists, matches_played, minutes, yellow_cards, red_cards, position")
+                .eq("club_id", club_id)
+                .eq("player_name", p_name)
+                .order("season", desc=True)
+                .execute()
+            )
+            if stats.data:
+                queried_players[p_name] = sorted(stats.data, key=lambda x: x.get("season") or 0)
+
+        return queried_players
+    except Exception as e:
+        import logging
+        logging.getLogger("ballerzhq.chat").error("Error in _match_player_in_message: %s", e)
+        return {}
