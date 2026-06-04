@@ -351,7 +351,7 @@ html.snap-landing .snap-section {
 .hero-stadium::before {
   content: ''; position: absolute; inset: 0;
   background-image: url('/cinematic_clean.png');
-  background-size: cover; background-position: center center;
+  background-size: cover; background-position: center bottom;
   background-repeat: no-repeat;
   /* Shown as-is — no darkening, blur, or zoom per request. */
 }
@@ -409,3 +409,16 @@ body.hovering #c-ring {
 }
 body.hovering #c-dot { width: 10px; height: 10px; background: #fff; }
 body.clicking #c-ring { width: 26px; height: 26px; border-color: rgba(245,158,11,0.6); }
+
+/* Hide Scroll indicator on short heights or mobile screens to prevent overlaps */
+@media (max-height: 740px) {
+  .hero-scroll-explore {
+    display: none !important;
+  }
+}
+@media (max-width: 1023px) {
+  .hero-scroll-explore {
+    display: none !important;
+  }
+}
+

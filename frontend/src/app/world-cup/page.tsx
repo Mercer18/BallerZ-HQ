@@ -36,6 +36,75 @@ const CONFED_COLORS: Record<string, string> = {
   CAF: '#F2786B', AFC: '#c084fc', OFC: '#2dd4bf',
 }
 
+const COUNTRY_CODES: Record<string, string> = {
+  'mexico': 'mx',
+  'south africa': 'za',
+  'south korea': 'kr',
+  'czech republic': 'cz',
+  'canada': 'ca',
+  'bosnia and herzegovina': 'ba',
+  'qatar': 'qa',
+  'switzerland': 'ch',
+  'brazil': 'br',
+  'morocco': 'ma',
+  'haiti': 'ht',
+  'scotland': 'gb-sct',
+  'united states': 'us',
+  'paraguay': 'py',
+  'australia': 'au',
+  'turkey': 'tr',
+  'germany': 'de',
+  'curaçao': 'cw',
+  'curacao': 'cw',
+  'ivory coast': 'ci',
+  'ecuador': 'ec',
+  'netherlands': 'nl',
+  'japan': 'jp',
+  'sweden': 'se',
+  'tunisia': 'tn',
+  'belgium': 'be',
+  'egypt': 'eg',
+  'iran': 'ir',
+  'new zealand': 'nz',
+  'spain': 'es',
+  'cape verde': 'cv',
+  'saudi arabia': 'sa',
+  'uruguay': 'uy',
+  'france': 'fr',
+  'senegal': 'sn',
+  'iraq': 'iq',
+  'norway': 'no',
+  'argentina': 'ar',
+  'algeria': 'dz',
+  'austria': 'at',
+  'jordan': 'jo',
+  'portugal': 'pt',
+  'dr congo': 'cd',
+  'uzbekistan': 'uz',
+  'colombia': 'co',
+  'england': 'gb-eng',
+  'croatia': 'hr',
+  'ghana': 'gh',
+  'panama': 'pa'
+}
+
+function renderFlag(countryName: string, className = "h-4 object-contain rounded-sm") {
+  const code = COUNTRY_CODES[countryName.toLowerCase()]
+  if (code) {
+    return (
+      <img
+        src={`https://flagcdn.com/w40/${code}.png`}
+        srcSet={`https://flagcdn.com/w80/${code}.png 2x`}
+        alt={countryName}
+        className={className}
+        style={{ display: 'inline-block', verticalAlign: 'middle' }}
+      />
+    )
+  }
+  return <span className="text-xs">🌐</span>
+}
+
+
 // ── confederation filter (the international "league filter") ─────────
 function ConfedFilter({ confeds, active, onChange }: {
   confeds: Confed[]; active: string; onChange: (c: string) => void
@@ -139,7 +208,7 @@ function Predictor({ teams }: { teams: Team[] }) {
         <div>
           <div className="flex items-end justify-between mb-3">
             <div className="text-center flex-1">
-              <div className="text-4xl mb-1">{home?.flag_emoji}</div>
+              <div className="flex justify-center mb-2 h-7">{home && renderFlag(home.name, "h-7 object-contain")}</div>
               <div className="font-semibold text-text-primary text-sm">{home?.name}</div>
               <div className="font-mono text-[11px] text-text-muted">Elo {Math.round(home?.elo_rating ?? 0)}</div>
             </div>
@@ -148,7 +217,7 @@ function Predictor({ teams }: { teams: Team[] }) {
               <div className="font-mono text-[10px] text-text-muted uppercase mt-1">likely</div>
             </div>
             <div className="text-center flex-1">
-              <div className="text-4xl mb-1">{away?.flag_emoji}</div>
+              <div className="flex justify-center mb-2 h-7">{away && renderFlag(away.name, "h-7 object-contain")}</div>
               <div className="font-semibold text-text-primary text-sm">{away?.name}</div>
               <div className="font-mono text-[11px] text-text-muted">Elo {Math.round(away?.elo_rating ?? 0)}</div>
             </div>
@@ -182,7 +251,7 @@ function Groups({ groups, activeConfed }: { groups: GroupBlock[]; activeConfed: 
                   className="flex items-center gap-2.5 px-4 py-2 border-b border-dashed border-white/[0.04] last:border-0"
                   style={{ opacity: dim ? 0.28 : 1 }}>
                   <span className="font-mono text-[11px] text-text-muted w-3">{i + 1}</span>
-                  <span className="text-lg leading-none">{r.flag}</span>
+                  <span className="shrink-0 flex items-center">{renderFlag(r.name, "h-4 w-6 object-contain rounded-sm")}</span>
                   <span className="text-sm text-text-primary font-medium flex-1 truncate">{r.name}</span>
                   <span className="font-mono text-[11px] text-text-secondary tabular-nums">{Math.round(r.elo)}</span>
                 </div>
@@ -220,7 +289,7 @@ function Fixtures({ fixtures }: { fixtures: Fixture[] }) {
                   <span className="font-mono text-[10px] text-text-muted w-6 shrink-0">{f.group}</span>
                   <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
                     <span className="text-sm text-text-primary font-medium truncate text-right">{f.home.name}</span>
-                    <span className="text-lg leading-none shrink-0">{f.home.flag}</span>
+                    <span className="shrink-0 flex items-center">{renderFlag(f.home.name, "h-4 w-6 shrink-0 object-contain rounded-sm")}</span>
                   </div>
                   <div className="shrink-0 w-20 text-center">
                     {f.status === 'finished'
@@ -228,7 +297,7 @@ function Fixtures({ fixtures }: { fixtures: Fixture[] }) {
                       : <span className="font-serif text-base text-accent-gold">{f.match_iq.likely_score}</span>}
                   </div>
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-lg leading-none shrink-0">{f.away.flag}</span>
+                    <span className="shrink-0 flex items-center">{renderFlag(f.away.name, "h-4 w-6 shrink-0 object-contain rounded-sm")}</span>
                     <span className="text-sm text-text-primary font-medium truncate">{f.away.name}</span>
                   </div>
                 </div>
@@ -320,7 +389,16 @@ function WorldCupContent() {
               <Stat label="Nations" value="48" />
               <Stat label="Groups" value="12" />
               <Stat label="Group matches" value="72" />
-              <Stat label="Match IQ favourite" value={topTeam ? `${topTeam.flag_emoji} ${topTeam.name}` : '—'} tone="gold" />
+              <Stat
+                label="Match IQ favourite"
+                value={topTeam ? (
+                  <>
+                    {renderFlag(topTeam.name, "h-4 object-contain rounded-sm")}
+                    <span>{topTeam.name}</span>
+                  </>
+                ) : '—'}
+                tone="gold"
+              />
             </div>
 
             {/* confederation filter */}
@@ -369,11 +447,11 @@ function WorldCupContent() {
   )
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'gold' }) {
+function Stat({ label, value, tone }: { label: string; value: React.ReactNode; tone?: 'gold' }) {
   return (
     <div className="card-terminal p-3.5">
       <div className="terminal-label text-text-muted mb-1">{label}</div>
-      <div className={`font-serif text-xl font-semibold ${tone === 'gold' ? 'text-accent-gold' : 'text-text-primary'} truncate`}>{value}</div>
+      <div className={`font-serif text-xl font-semibold ${tone === 'gold' ? 'text-accent-gold' : 'text-text-primary'} truncate flex items-center gap-2`}>{value}</div>
     </div>
   )
 }

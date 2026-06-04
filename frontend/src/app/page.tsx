@@ -168,35 +168,69 @@ function PageContent() {
     checkAuth()
   }, [])
 
+  const [featuresLeft, setFeaturesLeft] = useState<number | null>(null)
+  const [ballerzLeft, setBallerzLeft] = useState<number | null>(null)
+
+  useEffect(() => {
+    const update = () => {
+      const dot1 = document.getElementById('stats-dot-1')
+      const dot2 = document.getElementById('stats-dot-2')
+      if (dot1 && dot2) {
+        setFeaturesLeft(dot1.getBoundingClientRect().left)
+        setBallerzLeft(dot2.getBoundingClientRect().left)
+      }
+    }
+    update()
+    window.addEventListener('resize', update)
+    const interval = setInterval(update, 100)
+    const timeout = setTimeout(() => clearInterval(interval), 3000)
+    return () => {
+      window.removeEventListener('resize', update)
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen text-white relative">
       <EliteBackground />
       <CustomCursor />
 
       {/* ─── NAV ─── */}
-      <nav className="fixed top-0 w-full z-50 h-[72px] bg-[#060b18]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <nav
+        className="fixed top-0 w-full z-50 h-[56px]"
+        style={{
+          background: 'rgba(8,11,16,0.72)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(52,211,153,0.38)',
+          boxShadow: '0 8px 24px -8px rgba(0,0,0,0.5), 0 0 18px -6px rgba(52,211,153,0.30)',
+        }}
+      >
+        {/* Viewport-aligned desktop center nav links */}
+        <div className="absolute inset-0 pointer-events-none hidden md:block">
+          <button
+            onClick={() => document.getElementById('platform')?.scrollIntoView({ behavior: 'smooth' })}
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.18em] transition-colors"
+            style={{ left: featuresLeft !== null ? `${featuresLeft}px` : 'calc(50% - 190px)' }}
+            {...interactiveProps}
+          >
+            Features
+          </button>
+          <button
+            onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto flex items-center gap-1.5 text-[11px] font-bold text-accent-amber hover:text-accent-amber/70 uppercase tracking-[0.18em] transition-colors"
+            style={{ left: ballerzLeft !== null ? `${ballerzLeft}px` : 'calc(50% + 40px)' }}
+            {...interactiveProps}
+          >
+            BallerZ Pro <Crown className="w-3 h-3" />
+          </button>
+        </div>
+
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center select-none" {...interactiveProps}>
             <AnimatedLogo size="sm" />
           </Link>
-
-          {/* Center nav links */}
-          <div className="hidden md:flex items-center gap-10">
-            <button
-              onClick={() => document.getElementById('platform')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.18em] transition-colors"
-              {...interactiveProps}
-            >
-              Capabilities
-            </button>
-            <button
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-              className="flex items-center gap-1.5 text-[11px] font-bold text-accent-amber hover:text-accent-amber/70 uppercase tracking-[0.18em] transition-colors"
-              {...interactiveProps}
-            >
-              Pro Access <Crown className="w-3 h-3" />
-            </button>
-          </div>
 
           {/* Right auth buttons */}
           <div className="flex items-center gap-2">
@@ -231,11 +265,11 @@ function PageContent() {
       </nav>
 
       {/* ─── HERO ─── */}
-      <section className="snap-section relative h-screen flex flex-col justify-center pt-[72px] overflow-hidden">
+      <section className="snap-section relative h-screen flex flex-col justify-center pt-[84px] overflow-hidden">
         {/* Stadium wallpaper — scoped to the hero section only, fades into the dark below */}
         <div className="hero-stadium" />
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 flex-1 flex items-start justify-center">
-          <div className="w-full flex flex-col items-center text-center gap-6 pt-10 lg:pt-14 max-w-4xl">
+          <div className="w-full flex flex-col items-center text-center gap-4 sm:gap-6 pt-0 sm:pt-2 lg:pt-4 max-w-4xl">
 
             {/* Pill badge — "Updated · ..." (sheen sweep) */}
             <div
@@ -254,7 +288,7 @@ function PageContent() {
                 <span className="absolute inset-0 rounded-full bg-accent-emerald pulse-ring" />
                 <span className="absolute inset-0 rounded-full bg-accent-emerald" />
               </span>
-              <span><b ref={matches.ref} className="text-accent-emerald font-bold tabular-nums">{matches.count.toLocaleString()}</b> matches · <b ref={players.ref} className="text-accent-emerald font-bold tabular-nums">{players.count.toLocaleString()}</b> players · <b className="text-accent-emerald font-bold">5</b> leagues · <b ref={seasons.ref} className="text-accent-emerald font-bold tabular-nums">{seasons.count}</b> seasons</span>
+              <span><b ref={matches.ref} className="text-accent-emerald font-bold tabular-nums">{matches.count.toLocaleString()}</b> matches <span id="stats-dot-1">·</span> <b ref={players.ref} className="text-accent-emerald font-bold tabular-nums">{players.count.toLocaleString()}</b> players <span id="stats-dot-2">·</span> <b className="text-accent-emerald font-bold">5</b> leagues · <b ref={seasons.ref} className="text-accent-emerald font-bold tabular-nums">{seasons.count}</b> seasons</span>
             </div>
 
             {/* Headline — Fraunces editorial (V3 spec): Every / number. / your team. */}
@@ -268,7 +302,7 @@ function PageContent() {
             <p className="lift lift-d1 text-base md:text-lg leading-relaxed max-w-[620px] font-medium" style={{ color: '#E8EAEE', textShadow: '0 1px 12px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6)' }}>
               A <span className="text-accent-emerald font-semibold" style={{ textShadow: '0 2px 16px rgba(52,211,153,0.5), 0 1px 4px rgba(0,0,0,0.8)' }}>personalised</span> football intelligence platform powered by <span className="text-accent-emerald font-semibold" style={{ textShadow: '0 2px 16px rgba(52,211,153,0.5), 0 1px 4px rgba(0,0,0,0.8)' }}>RAG</span>.
               <br />Over a decade of match data, standings computed from scratch, and an AI analyst that only speaks in verified numbers from your club&apos;s data.
-              <br /><span className="italic font-semibold text-accent-emerald" style={{ marginLeft: '1.73em', textShadow: '0 2px 16px rgba(52,211,153,0.5), 0 1px 4px rgba(0,0,0,0.8)' }}>Europe&apos;s top five leagues. Every number accounted for.</span>
+              <br /><span className="block mt-2 italic font-semibold text-accent-emerald" style={{ textShadow: '0 2px 16px rgba(52,211,153,0.5), 0 1px 4px rgba(0,0,0,0.8)' }}>Europe&apos;s top five leagues. Every number accounted for.</span>
             </p>
 
             {/* CTAs — Magnetic emerald "Pick your club" + amber glass Pro pill */}
@@ -296,7 +330,7 @@ function PageContent() {
         </div>
 
         {/* Scroll to explore — text + glowing beam line + chevron, with dark backing so it reads over the ball */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3.5 px-10 py-4">
+        <div className="hero-scroll-explore absolute bottom-0 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3.5 px-10 py-4">
           <span className="font-mono text-[11px] font-bold text-accent-emerald uppercase tracking-[0.45em]" style={{ textShadow: '0 0 12px rgba(16,185,129,0.5)', paddingLeft: '0.45em', marginLeft: '1.05em' }}>Scroll to explore</span>
           <div className="scroll-line relative w-px h-11 overflow-hidden">
             <span className="scroll-beam" />
@@ -305,13 +339,13 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ─── PLATFORM CAPABILITIES (ELABORATE BENTO GRID) ─── */}
+      {/* ─── PLATFORM FEATURES (ELABORATE BENTO GRID) ─── */}
       <section id="platform" className="snap-section relative z-10 min-h-screen flex flex-col">
 
 
         <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col justify-center py-16">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="inline-block text-[11px] font-bold text-accent-emerald uppercase tracking-[0.2em] border border-accent-emerald/22 rounded-lg px-3.5 py-1.5 mb-6">Capabilities</span>
+            <span className="inline-block text-[11px] font-bold text-accent-emerald uppercase tracking-[0.2em] border border-accent-emerald/22 rounded-lg px-3.5 py-1.5 mb-6">Features</span>
             <h2 className="font-serif text-4xl lg:text-[3.4rem] font-medium tracking-[-0.02em] leading-[1.05]">
               <span className="text-[#ECEBE7]">Professional-grade</span><br />
               <span className="italic text-accent-emerald">football intelligence</span>
@@ -497,7 +531,7 @@ function PageContent() {
   )
 }
 
-// ── Landing capabilities helpers (reference .fcard / .mini) ──
+// ── Landing features helpers (reference .fcard / .mini) ──
 function FCard({ ord, label, title, desc, meta, gold = false, pro = false, children }: {
   ord: string; label: string; title: string; desc: string; meta?: string
   gold?: boolean; pro?: boolean; children?: React.ReactNode

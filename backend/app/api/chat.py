@@ -203,7 +203,11 @@ def build_user_context(user_id: str, message: str = "") -> Dict[str, Any]:
     if message:
         context["queried_players"] = _match_player_in_message(club_id, message)
 
+    # ── club analytics (historical, goals, margins, clean sheets, comebacks, player ratios) ──
+    context["club_analytics"] = _calculate_club_analytics(club_id)
+
     return context
+
 
 
 def _top_players(club_id: int, season: int, stat: str, limit: int = 5) -> List[Dict[str, Any]]:
@@ -377,3 +381,183 @@ def _match_player_in_message(club_id: int, message: str) -> Dict[str, List[Dict[
         import logging
         logging.getLogger("ballerzhq.chat").error("Error in _match_player_in_message: %s", e)
         return {}
+
+
+def _calculate_club_analytics(club_id: int) -> Dict[str, Any]:
+    """
+    Calculate extensive historical analytics for the club by pulling all matches
+    and player stats in single queries and doing the aggregates in Python.
+    """
+    from collections import defaultdict
+    analytics = {}
+    try:
+        # 1. Fetch all finished matches for this club
+        res = (
+            supabase.table("matches")
+            .select(
+                "id, match_date, season, home_club_id, away_club_id, home_score, away_score, "
+                "status, half_time_home_score, half_time_away_score, league_name"
+            )
+            .or_(f"home_club_id.eq.{club_id},away_club_id.eq.{club_id}")
+            .eq("status", "finished")
+            .execute()
+        )
+        matches = res.data or []
+
+        # 2. Fetch all clubs for name lookup to avoid extra queries
+        clubs_res = supabase.table("clubs").select("id, name").execute()
+        club_names = {c["id"]: c["name"] for c in clubs_res.data or []}
+
+        if matches:
+            # A. Biggest victories
+            max_margin = 0
+            biggest_wins = []
+            for m in matches:
+                is_home = m["home_club_id"] == club_id
+                our_score = m["home_score"] if is_home else m["away_score"]
+                opp_score = m["away_score"] if is_home else m["home_score"]
+                if our_score is None or opp_score is None or our_score <= opp_score:
+                    continue
+                margin = our_score - opp_score
+                if margin > max_margin:
+                    max_margin = margin
+                    biggest_wins = [m]
+                elif margin == max_margin:
+                    biggest_wins.append(m)
+
+            formatted_wins = []
+            for m in biggest_wins:
+                is_home = m["home_club_id"] == club_id
+                opp_id = m["away_club_id"] if is_home else m["home_club_id"]
+                opp_name = club_names.get(opp_id, "Unknown")
+                our_score = m["home_score"] if is_home else m["away_score"]
+                opp_score = m["away_score"] if is_home else m["home_score"]
+                formatted_wins.append(
+                    f"{our_score}-{opp_score} vs {opp_name} on {m['match_date']} (Season {m['season']}-{str(m['season']+1)[-2:]})"
+                )
+            analytics["biggest_victory_margin"] = max_margin
+            analytics["biggest_victories"] = formatted_wins
+
+            # B. Clean sheets by season
+            clean_sheets_by_season = defaultdict(int)
+            for m in matches:
+                is_home = m["home_club_id"] == club_id
+                opp_score = m["away_score"] if is_home else m["home_score"]
+                if opp_score == 0:
+                    clean_sheets_by_season[m["season"]] += 1
+            analytics["clean_sheets_by_season"] = dict(clean_sheets_by_season)
+
+            # C. Comeback wins (conceded first but won) since 2011
+            # We filter matches where we won but trailed at half-time (guaranteed conceded first).
+            comebacks = []
+            for m in matches:
+                if m["match_date"] and m["match_date"] >= "2011-01-01":
+                    is_home = m["home_club_id"] == club_id
+                    our_score = m["home_score"] if is_home else m["away_score"]
+                    opp_score = m["away_score"] if is_home else m["home_score"]
+                    our_ht = m["half_time_home_score"] if is_home else m["half_time_away_score"]
+                    opp_ht = m["half_time_away_score"] if is_home else m["half_time_home_score"]
+                    
+                    if our_score is not None and opp_score is not None and our_score > opp_score:
+                        if opp_ht is not None and our_ht is not None and opp_ht > our_ht:
+                            opp_id = m["away_club_id"] if is_home else m["home_club_id"]
+                            opp_name = club_names.get(opp_id, "Unknown")
+                            comebacks.append(
+                                f"{m['match_date']}: won {our_score}-{opp_score} vs {opp_name} after trailing {our_ht}-{opp_ht} at HT"
+                            )
+            analytics["comeback_wins_since_2011"] = comebacks
+
+            # D. W-D-L against Barcelona since 2010
+            barca_id = None
+            for cid, name in club_names.items():
+                if "barcelona" in name.lower():
+                    barca_id = cid
+                    break
+            
+            if barca_id:
+                h2h = {"overall": [0,0,0], "home": [0,0,0], "away": [0,0,0]}
+                for m in matches:
+                    if m["match_date"] and m["match_date"] >= "2010-01-01":
+                        is_home = m["home_club_id"] == club_id
+                        opp_id = m["away_club_id"] if is_home else m["home_club_id"]
+                        if opp_id == barca_id:
+                            our_score = m["home_score"] if is_home else m["away_score"]
+                            opp_score = m["away_score"] if is_home else m["home_score"]
+                            if our_score is not None and opp_score is not None:
+                                idx = 0 if our_score > opp_score else 1 if our_score == opp_score else 2
+                                h2h["overall"][idx] += 1
+                                if is_home:
+                                    h2h["home"][idx] += 1
+                                else:
+                                    h2h["away"][idx] += 1
+                analytics["barcelona_h2h_since_2010"] = h2h
+
+            # E. Goals scored and conceded per season
+            season_goals = {}
+            for m in matches:
+                is_home = m["home_club_id"] == club_id
+                our_score = m["home_score"] if is_home else m["away_score"]
+                opp_score = m["away_score"] if is_home else m["home_score"]
+                if our_score is None or opp_score is None:
+                    continue
+                s = m["season"]
+                if s not in season_goals:
+                    season_goals[s] = {"goals_scored": 0, "goals_conceded": 0, "matches_played": 0}
+                season_goals[s]["goals_scored"] += our_score
+                season_goals[s]["goals_conceded"] += opp_score
+                season_goals[s]["matches_played"] += 1
+            analytics["goals_by_season"] = season_goals
+
+        # 3. Fetch all player stats for the club
+        players_res = (
+            supabase.table("player_stats")
+            .select("player_name, season, goals, assists, matches_played, minutes, position")
+            .eq("club_id", club_id)
+            .execute()
+        )
+        players = players_res.data or []
+
+        if players:
+            # A. Goals-per-minute ratio (min 10 goals in a season)
+            player_ratios = []
+            for p in players:
+                goals = p.get("goals") or 0
+                minutes = p.get("minutes") or 0
+                if goals >= 10 and minutes > 0:
+                    player_ratios.append({
+                        "name": p["player_name"],
+                        "season": p["season"],
+                        "goals": goals,
+                        "minutes": minutes,
+                        "ratio": round(minutes / goals, 1)
+                    })
+            player_ratios = sorted(player_ratios, key=lambda x: x["ratio"])
+            analytics["best_goals_per_minute_seasons"] = player_ratios
+
+            # B. Cumulative player stats since 2017-18
+            player_totals = {}
+            for p in players:
+                if p["season"] >= 2017:
+                    name = p["player_name"]
+                    goals = p.get("goals") or 0
+                    assists = p.get("assists") or 0
+                    if name not in player_totals:
+                        player_totals[name] = {"goals": 0, "assists": 0, "seasons": []}
+                    player_totals[name]["goals"] += goals
+                    player_totals[name]["assists"] += assists
+                    player_totals[name]["seasons"].append(f"{p['season']}-{str(p['season']+1)[-2:]} ({goals}g)")
+            
+            top_cumulative_scorers = sorted(
+                [{"name": k, "goals": v["goals"], "assists": v["assists"], "breakdown": ", ".join(v["seasons"])} 
+                 for k, v in player_totals.items()],
+                key=lambda x: x["goals"],
+                reverse=True
+            )
+            analytics["top_cumulative_scorers_since_2017"] = top_cumulative_scorers
+
+    except Exception as e:
+        import logging
+        logging.getLogger("ballerzhq.chat").error("Error in _calculate_club_analytics: %s", e)
+    
+    return analytics
+
