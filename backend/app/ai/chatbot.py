@@ -210,8 +210,14 @@ def _ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
+# Groq models tried in order. They have SEPARATE free-tier daily token buckets,
+# so if the 70b model's limit is exhausted the 8b model keeps Club IQ answering
+# instead of dropping to the templated "at capacity" fallback.
+GROQ_CHAT_MODELS = ("llama-3.3-70b-versatile", "llama-3.1-8b-instant")
+
+
 def generate_response(message: str, mode: str, context: Dict[str, Any]) -> str:
-    """Generate a grounded response. Tries Groq first, then OpenAI, then templated fallback."""
+    """Generate a grounded response. Tries Groq (70b → 8b), then OpenAI, then templated fallback."""
 
     context_str = _build_context_string(context)
     system_prompt = ANALYST_SYSTEM_PROMPT if mode == "analyst" else HYPE_SYSTEM_PROMPT
@@ -225,19 +231,21 @@ def generate_response(message: str, mode: str, context: Dict[str, Any]) -> str:
              mode, len(message), len(context_str), GROQ_AVAILABLE, OPENAI_AVAILABLE)
 
     if GROQ_AVAILABLE:
-        try:
-            resp = groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            return resp.choices[0].message.content.strip()
-        except Exception as e:
-            log.error("Groq call failed: %s\n%s", e, traceback.format_exc())
+        for model in GROQ_CHAT_MODELS:
+            try:
+                resp = groq_client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+                return resp.choices[0].message.content.strip()
+            except Exception as e:
+                # Rate-limited / errored on this model — try the next one before giving up.
+                log.error("Groq call failed (model=%s): %s", model, e)
 
     if OPENAI_AVAILABLE:
         try:
@@ -481,9 +489,9 @@ def _templated_fallback(message: str, mode: str, ctx: Dict[str, Any]) -> str:
 
     if mode == "analyst":
         prefix = f"{club} snapshot — straight from the database:\n\n"
-        suffix = "\n\n(The conversational AI is offline right now — this is the raw data.)"
+        suffix = "\n\n(Club IQ's live AI is at capacity for the moment — here are the verified numbers straight from your data.)"
     else:
         prefix = f"Here's where {club} stand right now:\n\n"
-        suffix = "\n\n(The conversational AI is offline right now — this is the raw data.)"
+        suffix = "\n\n(Club IQ's live AI is at capacity for the moment — here are the verified numbers straight from your data.)"
 
     return prefix + body + suffix

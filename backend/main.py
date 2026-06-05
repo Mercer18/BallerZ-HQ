@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import Optional
 import os
 
-from app.api import chat, data, matches, players, international
+from app.api import chat, data, matches, players, international, auth
 
 app = FastAPI(
     title="BallerZ HQ API",
@@ -40,6 +40,7 @@ app.include_router(players.router, prefix="/api/players", tags=["players"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(data.router, prefix="/api/data", tags=["data"])
 app.include_router(international.router, prefix="/api/intl", tags=["international"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 @app.get("/")
 async def root():

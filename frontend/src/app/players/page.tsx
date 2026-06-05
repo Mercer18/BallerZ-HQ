@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Users, Crown, Loader2, AlertCircle } from 'lucide-react'
+import { Users, Crown, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { SkeletonTable } from '@/components/ui/Skeleton'
+import { apiFetch } from '@/lib/api'
 
 interface Player {
   player_name: string
@@ -21,7 +22,6 @@ interface Player {
   red_cards: number
 }
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL
 function seasonLabel(s: number) { return `${s}-${String(s + 1).slice(-2)}` }
 
 type SortStat = 'goals' | 'assists' | 'matches_played' | 'minutes' | 'yellow_cards'
@@ -35,8 +35,9 @@ function PlayersContent() {
   const [season, setSeason] = useState(searchParams.get('season') ?? '')
   const [stat, setStat] = useState<SortStat>((searchParams.get('stat') as SortStat) || 'goals')
   const [players, setPlayers] = useState<Player[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     const init = async () => {
@@ -52,15 +53,23 @@ function PlayersContent() {
 
   useEffect(() => {
     if (!authed) return
-    fetch(`${BACKEND}/api/players/seasons`).then(r => r.ok ? r.json() : []).then((d: { league: string; season: number }[]) => {
-      setPairs(d)
-      if (d.length && !league && !season) {
-        const latest = Math.max(...d.map(x => x.season))
-        const leaguesForLatest = d.filter(x => x.season === latest).map(x => x.league).sort()
-        setSeason(String(latest)); setLeague(leaguesForLatest[0] ?? '')
-      }
-    }).catch(() => {})
-  }, [authed])
+    let cancelled = false
+    apiFetch('/api/players/seasons')
+      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json() })
+      .then((d: { league: string; season: number }[]) => {
+        if (cancelled) return
+        setPairs(d)
+        if (!d.length) { setLoading(false); return } // genuinely no data → let empty state show
+        if (!league || !season) {
+          const latest = Math.max(...d.map(x => x.season))
+          const leaguesForLatest = d.filter(x => x.season === latest).map(x => x.league).sort()
+          setSeason(prev => prev || String(latest))
+          setLeague(prev => prev || leaguesForLatest[0] || '')
+        }
+      })
+      .catch(() => { if (!cancelled) { setError('Could not load player seasons.'); setLoading(false) } })
+    return () => { cancelled = true }
+  }, [authed, reloadKey])
 
   const leagues = useMemo(() => Array.from(new Set(pairs.map(p => p.league))).sort(), [pairs])
   const seasons = useMemo(() => Array.from(new Set(pairs.map(p => p.season))).sort((a, b) => b - a), [pairs])
@@ -80,13 +89,15 @@ function PlayersContent() {
     if (!authed || !league || !season) return
     let cancelled = false
     setLoading(true); setError('')
-    fetch(`${BACKEND}/api/players/top?league=${encodeURIComponent(league)}&season=${season}&stat=${stat}&limit=30`)
+    apiFetch(`/api/players/top?league=${encodeURIComponent(league)}&season=${season}&stat=${stat}&limit=30`)
       .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json() })
       .then((d: Player[]) => { if (!cancelled) setPlayers(d) })
-      .catch(e => { if (!cancelled) { setError(e.message); setPlayers([]) } })
+      .catch(() => { if (!cancelled) { setError('Could not load player stats.'); setPlayers([]) } })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [authed, league, season, stat])
+  }, [authed, league, season, stat, reloadKey])
+
+  const retry = () => { setError(''); setLoading(true); setReloadKey(k => k + 1) }
 
   if (!authed) return <div className="page-container app-bg pt-14 items-center justify-center h-screen"><Loader2 className="w-6 h-6 text-accent-emerald animate-spin" /></div>
 
@@ -135,9 +146,12 @@ function PlayersContent() {
           </div>
         </div>
 
-        {error && <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg flex items-center text-sm mb-6"><AlertCircle className="w-4 h-4 mr-2 shrink-0" /> {error}</div>}
-
-        {loading ? (
+        {error ? (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-4 rounded-lg flex items-center justify-between gap-4 text-sm">
+            <span className="flex items-center"><AlertCircle className="w-4 h-4 mr-2 shrink-0" /> {error}</span>
+            <button onClick={retry} className="inline-flex items-center gap-1.5 rounded-md bg-red-500/15 border border-red-500/30 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider hover:bg-red-500/25 transition-colors shrink-0"><RefreshCw className="w-3.5 h-3.5" /> Retry</button>
+          </div>
+        ) : loading ? (
           <SkeletonTable rows={12} />
         ) : players.length === 0 ? (
           <div className="text-center py-20 text-text-secondary text-sm">No player data for this selection.</div>

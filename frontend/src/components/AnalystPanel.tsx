@@ -87,7 +87,7 @@ export function AnalystPanel({ open, onClose }: { open: boolean; onClose: () => 
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
       await supabase.from('chat_messages').insert({ user_id: userId, role: 'user', content: userMsg.content, mode })
-      const res = await fetch(`${BACKEND}/api/chat`, {
+      const res = await fetch(`${BACKEND}/api/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, message: userMsg.content, mode }),

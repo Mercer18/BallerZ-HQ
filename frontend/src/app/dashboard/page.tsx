@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import { TrendingUp, MessageSquare, Search, ListOrdered, Swords, BarChart3, ChevronRight, Award, Loader2, Sparkles, Flame, Trophy, Zap, Users, History, Crown } from 'lucide-react'
+import { TrendingUp, MessageSquare, Search, ListOrdered, Swords, BarChart3, ChevronRight, Award, Sparkles, Flame, Trophy, Zap, Users, History, Crown, RefreshCw, CloudOff } from 'lucide-react'
 import Link from 'next/link'
 import { FormChart } from '@/components/charts/FormChart'
 import { formatDate } from '@/lib/utils'
 import { getClubColor, hexToRgb } from '@/lib/clubColors'
-
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL
+import { apiFetch } from '@/lib/api'
+import { PitchLoader } from '@/components/PitchLoader'
 
 interface ClubInfo { id: number; name: string; league: string | null }
 interface SeasonStats {
@@ -25,7 +25,6 @@ interface RecentMatch {
   home_club: { name: string } | null; away_club: { name: string } | null
 }
 interface GoalsSeason { season: number; goals_for: number; goals_against: number }
-interface SeasonStory { headline: string; story: string; powered_by_ai: boolean }
 
 function seasonLabel(s: number | null) {
   return s == null ? '—' : `${s}-${String(s + 1).slice(-2)}`
@@ -81,112 +80,132 @@ export default function Dashboard() {
   const [currentSeason, setCurrentSeason] = useState<number | null>(null)
   const [recent, setRecent] = useState<RecentMatch[]>([])
   const [form, setForm] = useState<string[]>([])
-  const [story, setStory] = useState<SeasonStory | null>(null)
   const [leaguePosition, setLeaguePosition] = useState<{ position: number; total: number } | null>(null)
   const [goalsHistory, setGoalsHistory] = useState<GoalsSeason[]>([])
+  const [error, setError] = useState(false)
+  const [revealed, setRevealed] = useState(false)
 
-  useEffect(() => {
-    const run = async () => {
-      setLoading(true)
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { router.push('/login'); return }
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(false)
 
-      const { data: prefs } = await supabase
-        .from('user_preferences')
-        .select('favorite_club_id, clubs (*)')
-        .eq('user_id', session.user.id)
-        .single()
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { router.push('/login'); return }
 
-      if (!prefs || !prefs.clubs) { router.push('/onboarding'); return }
+    const { data: prefs } = await supabase
+      .from('user_preferences')
+      .select('favorite_club_id, clubs (*)')
+      .eq('user_id', session.user.id)
+      .single()
 
-      const clubData: any = prefs.clubs
-      setClub({ id: clubData.id, name: clubData.name, league: clubData.league })
+    if (!prefs || !prefs.clubs) { router.push('/onboarding'); return }
 
-      let recentMatches: RecentMatch[] = []
-      try {
-        const r = await fetch(`${BACKEND}/api/matches/?club_id=${clubData.id}&limit=5`)
-        if (r.ok) recentMatches = await r.json()
-      } catch {}
-      setRecent(recentMatches)
+    const clubData: any = prefs.clubs
+    setClub({ id: clubData.id, name: clubData.name, league: clubData.league })
 
-      setForm(
-        recentMatches.slice().reverse().map(m => {
-          const home = m.home_club_id === clubData.id
-          const gf = home ? m.home_score : m.away_score
-          const ga = home ? m.away_score : m.home_score
-          if (gf == null || ga == null) return 'D'
-          return gf > ga ? 'W' : gf < ga ? 'L' : 'D'
-        })
-      )
-
-      const cs = recentMatches.length ? recentMatches[0].season : null
-      setCurrentSeason(cs)
-
-      try {
-        const q = cs != null ? `?season=${cs}` : ''
-        const s = await fetch(`${BACKEND}/api/matches/clubs/${clubData.id}/season-stats${q}`)
-        if (s.ok) setStats(await s.json())
-      } catch {}
-
+    // ── Critical call: recent matches. If the backend is unreachable (down, or a
+    //    cold boot that never finished), surface an error + retry instead of a
+    //    misleading empty dashboard. A 200 with an empty list is NOT an error. ──
+    let recentMatches: RecentMatch[] = []
+    try {
+      const r = await apiFetch(`/api/matches/?club_id=${clubData.id}&limit=5`)
+      if (!r.ok) throw new Error(`matches ${r.status}`)
+      recentMatches = await r.json()
+    } catch {
+      setError(true)
       setLoading(false)
+      return
+    }
 
-      // B-3 fetches — non-blocking, fire in parallel after main load
-      const b3: Promise<void>[] = []
+    setRecent(recentMatches)
+    setForm(
+      recentMatches.slice().reverse().map(m => {
+        const home = m.home_club_id === clubData.id
+        const gf = home ? m.home_score : m.away_score
+        const ga = home ? m.away_score : m.home_score
+        if (gf == null || ga == null) return 'D'
+        return gf > ga ? 'W' : gf < ga ? 'L' : 'D'
+      })
+    )
 
-      if (cs != null && clubData.league) {
-        b3.push(
-          fetch(`${BACKEND}/api/matches/standings?league=${encodeURIComponent(clubData.league)}&season=${cs}`)
-            .then(async r => {
-              if (!r.ok) return
-              const rows: any[] = await r.json()
-              const row = rows.find((x: any) => x.club_id === clubData.id || x.club?.id === clubData.id)
-              if (row) setLeaguePosition({ position: row.position, total: rows.length })
-            })
-            .catch(() => {})
-        )
-      }
+    const cs = recentMatches.length ? recentMatches[0].season : null
+    setCurrentSeason(cs)
 
-      if (cs != null && cs > 2010) {
-        b3.push(
-          fetch(`${BACKEND}/api/matches/clubs/${clubData.id}/season-stats?season=${cs - 1}`)
-            .then(async r => { if (r.ok) setPrevStats(await r.json()) })
-            .catch(() => {})
-        )
-      }
+    // ── Below here the server is confirmed up, so everything is best-effort:
+    //    a hiccup degrades gracefully (dashes / hidden sections) rather than
+    //    blanking the whole page. ──
+    try {
+      const q = cs != null ? `?season=${cs}` : ''
+      const s = await apiFetch(`/api/matches/clubs/${clubData.id}/season-stats${q}`)
+      if (s.ok) setStats(await s.json())
+    } catch {}
 
-      b3.push(
-        fetch(`${BACKEND}/api/matches/clubs/${clubData.id}/goals-history?seasons=5`)
-          .then(async r => { if (r.ok) setGoalsHistory(await r.json()) })
+    setLoading(false)
+
+    const extras: Promise<void>[] = []
+
+    if (cs != null && clubData.league) {
+      extras.push(
+        apiFetch(`/api/matches/standings?league=${encodeURIComponent(clubData.league)}&season=${cs}`, { retries: 0 })
+          .then(async r => {
+            if (!r.ok) return
+            const rows: any[] = await r.json()
+            const row = rows.find((x: any) => x.club_id === clubData.id || x.club?.id === clubData.id)
+            if (row) setLeaguePosition({ position: row.position, total: rows.length })
+          })
           .catch(() => {})
       )
-
-      await Promise.all(b3)
-
-      try {
-        const r = await fetch(`${BACKEND}/api/chat/season-story`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: session.user.id }),
-        })
-        if (r.ok) setStory(await r.json())
-      } catch {}
     }
-    run()
+
+    if (cs != null && cs > 2010) {
+      extras.push(
+        apiFetch(`/api/matches/clubs/${clubData.id}/season-stats?season=${cs - 1}`, { retries: 0 })
+          .then(async r => { if (r.ok) setPrevStats(await r.json()) })
+          .catch(() => {})
+      )
+    }
+
+    extras.push(
+      apiFetch(`/api/matches/clubs/${clubData.id}/goals-history?seasons=5`, { retries: 0 })
+        .then(async r => { if (r.ok) setGoalsHistory(await r.json()) })
+        .catch(() => {})
+    )
+
+    await Promise.all(extras)
   }, [router])
 
-  if (loading) {
+  useEffect(() => { load() }, [load])
+
+  if (error) {
     return (
       <div className="page-container app-bg h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-accent-emerald animate-spin" />
-          <p className="text-sm text-text-secondary">Loading dashboard...</p>
+        <div className="flex flex-col items-center gap-4 text-center max-w-sm px-6">
+          <div className="w-14 h-14 rounded-2xl bg-accent-coral/[0.10] border border-accent-coral/25 flex items-center justify-center">
+            <CloudOff className="w-7 h-7 text-accent-coral" />
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-serif text-xl font-semibold text-text-primary">Couldn&apos;t reach the server</p>
+            <p className="text-sm text-text-secondary leading-relaxed">
+              It may be waking up from sleep — that can take up to a minute on the first visit after a quiet spell. Give it a moment, then try again.
+            </p>
+          </div>
+          <button
+            onClick={() => load()}
+            className="inline-flex items-center gap-2 rounded-lg bg-accent-emerald/[0.12] border border-accent-emerald/30 text-accent-emerald font-mono text-xs font-bold uppercase tracking-wider px-4 py-2.5 hover:bg-accent-emerald/[0.18] transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" /> Try again
+          </button>
         </div>
       </div>
     )
+  }
+
+  if (!revealed) {
+    return <PitchLoader done={!loading} onComplete={() => setRevealed(true)} />
   }
 
   const clubColor = getClubColor(club?.name)

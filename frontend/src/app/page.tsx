@@ -265,11 +265,11 @@ function PageContent() {
       </nav>
 
       {/* ─── HERO ─── */}
-      <section className="snap-section relative h-screen flex flex-col justify-center pt-[84px] overflow-hidden">
+      <section className="hero-section snap-section relative h-screen flex flex-col justify-center pt-[84px] overflow-hidden">
         {/* Stadium wallpaper — scoped to the hero section only, fades into the dark below */}
         <div className="hero-stadium" />
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 flex-1 flex items-start justify-center">
-          <div className="w-full flex flex-col items-center text-center gap-4 sm:gap-6 pt-0 sm:pt-2 lg:pt-4 max-w-4xl">
+          <div className="hero-stack w-full flex flex-col items-center text-center gap-4 sm:gap-6 pt-0 sm:pt-2 lg:pt-4 max-w-4xl">
 
             {/* Pill badge — "Updated · ..." (sheen sweep) */}
             <div

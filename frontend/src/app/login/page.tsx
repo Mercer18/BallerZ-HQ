@@ -53,7 +53,7 @@ export default function Login() {
     <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-[#060b18]">
       {/* Stadium wallpaper */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[url('/stadium-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-55" />
+        <div className="absolute inset-0 bg-[url('/cinematic_clean.png')] bg-cover bg-center bg-no-repeat opacity-55" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,11,24,0.65)_0%,rgba(6,11,24,0.45)_50%,rgba(6,11,24,0.85)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(16,185,129,0.05)_0%,transparent_100%)]" />
         <div className="absolute inset-0 backdrop-blur-[2px]" />

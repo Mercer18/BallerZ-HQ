@@ -8,6 +8,8 @@ import { User, Mail, Lock, ShieldAlert, Sparkles, MailCheck } from 'lucide-react
 import { AmbientParticles } from '@/components/AmbientParticles'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL
+
 export default function Signup() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -26,32 +28,35 @@ export default function Signup() {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username: username,
-        }
-      }
-    })
 
-    if (error) {
-      setError(error.message)
+    // Create the account through the backend admin API — it's marked confirmed
+    // immediately, so no (rate-limited) confirmation email is ever sent.
+    try {
+      const res = await fetch(`${BACKEND}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.detail || 'Could not create the account. Please try again.')
+        setLoading(false)
+        return
+      }
+    } catch {
+      setError("Couldn't reach the server. Please try again.")
       setLoading(false)
       return
     }
 
-    // If Supabase email-confirmation is on, signUp returns user but no session.
-    // In that case, show the "check your inbox" state and route to /login.
-    // If confirmation is off (session present), straight to onboarding.
-    if (data.session) {
-      router.push('/onboarding')
-    } else {
-      setVerifySent(true)
+    // Account is confirmed — sign in straight away and head to onboarding.
+    const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
+    if (signInErr) {
+      setError(signInErr.message)
       setLoading(false)
-      setTimeout(() => router.push('/login'), 3000)
+      return
     }
+    router.push('/onboarding')
   }
 
   return (

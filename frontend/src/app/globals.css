@@ -95,7 +95,7 @@
   .stadium-bg {
     background-image:
       linear-gradient(180deg, rgba(6,11,24,0.65) 0%, rgba(6,11,24,0.4) 50%, rgba(6,11,24,0.85) 100%),
-      url('/stadium-bg.jpg');
+      url('/cinematic_clean.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -410,15 +410,16 @@ body.hovering #c-ring {
 body.hovering #c-dot { width: 10px; height: 10px; background: #fff; }
 body.clicking #c-ring { width: 26px; height: 26px; border-color: rgba(245,158,11,0.6); }
 
-/* Hide Scroll indicator on short heights or mobile screens to prevent overlaps */
-@media (max-height: 740px) {
-  .hero-scroll-explore {
-    display: none !important;
-  }
-}
-@media (max-width: 1023px) {
-  .hero-scroll-explore {
-    display: none !important;
-  }
+/* Hero adapts on short / narrow viewports instead of hiding the scroll cue:
+   shrink the headline + tighten spacing so the content fits, and compact the
+   scroll cue (drop the tall beam line) so it stays visible at the bottom
+   without overlapping the CTAs — at any window size. */
+@media (max-height: 760px), (max-width: 1023px) {
+  .hero-stack { gap: 0.5rem !important; }
+  .hero-section h1 span { font-size: clamp(2rem, 7.5vh, 5rem) !important; }
+  .hero-section h1 span:last-child { font-size: clamp(1.5rem, 5vh, 3.2rem) !important; }
+  .hero-scroll-explore { padding: 0 2.5rem 0.4rem !important; gap: 0.15rem !important; }
+  .hero-scroll-explore .scroll-line { display: none !important; }
+  .hero-scroll-explore > span:first-child { font-size: 8px !important; letter-spacing: 0.3em !important; }
 }
 
