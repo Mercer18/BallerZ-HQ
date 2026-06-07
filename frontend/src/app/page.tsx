@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ChevronRight, ChevronDown, ArrowRight, Search, ListOrdered, Swords, BarChart3, Bot,
   Crown, Check, Mail, CheckCircle2, Trophy, Users, Sparkles,
-  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock
+  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock, Linkedin
 } from 'lucide-react'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { AmbientParticles } from '@/components/AmbientParticles'
@@ -519,9 +519,27 @@ function PageContent() {
         <footer className="border-t border-white/[0.05] bg-[#0c1425] relative z-10 py-8 mt-auto">
           <div className="max-w-[1280px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
             <AnimatedLogo size="sm" />
-            <div className="flex items-center gap-8">
-              <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Privacy Policy</Link>
-              <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Terms of Service</Link>
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+              <div className="flex items-center gap-8">
+                <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Privacy Policy</Link>
+                <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Terms of Service</Link>
+              </div>
+              <span className="text-xs text-slate-500 font-mono flex items-center gap-1.5">
+                Created by{' '}
+                <a href="mailto:rishi18022005@gmail.com" className="hover:text-accent-emerald transition-colors" {...interactiveProps}>
+                  Rishi Srivastava
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/rishisrivastava18"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent-emerald text-slate-400 transition-colors inline-flex items-center"
+                  title="LinkedIn Profile"
+                  {...interactiveProps}
+                >
+                  <Linkedin className="w-3.5 h-3.5" />
+                </a>
+              </span>
             </div>
             <p className="text-sm text-slate-500">&copy; 2026 BallerZ HQ. All rights reserved.</p>
           </div>
