@@ -246,17 +246,17 @@ function PageContent() {
               <>
                 <Link
                   href="/login"
-                  className="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.18em] transition-colors px-4 py-2"
+                  className="glass-pill !py-2 !px-4 !text-[12px] !font-semibold"
                   {...interactiveProps}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-accent-emerald to-accent-blue text-white text-[11px] font-bold uppercase tracking-[0.12em] hover:opacity-90 transition-opacity"
+                  className="glass-pill glass-pill-emerald !py-2 !px-4 !text-[12px] !font-semibold"
                   {...interactiveProps}
                 >
-                  Get Started <ChevronRight className="w-3.5 h-3.5 ml-0.5 inline" />
+                  Get Started <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </>
             )}

@@ -241,6 +241,17 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    KEYFRAMES
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/* World Cup trophy nav icon — gentle float + pulsing emerald glow (option 3, no spin) */
+.wc-trophy {
+  animation: wc-trophy-glow 2.8s ease-in-out infinite;
+}
+@keyframes wc-trophy-glow {
+  0%, 100% { transform: translateY(1px) scale(1);     filter: drop-shadow(0 0 2px rgba(52,211,153,0.35)); }
+  50%      { transform: translateY(-2px) scale(1.06); filter: drop-shadow(0 0 8px rgba(52,211,153,0.8)); }
+}
+
+
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-33.3333%); }

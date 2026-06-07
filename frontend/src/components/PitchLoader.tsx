@@ -24,7 +24,7 @@ const PLAYERS: Pt[] = [
   { x: 32, y: 47 }, // 3  RCB
   { x: 34, y: 62 }, // 4  RB
   { x: 56, y: 24 }, // 5  LCM
-  { x: 58, y: 39 }, // 6  CM
+  { x: 61, y: 39 }, // 6  CM (dead-centre, overlapping the pitch centre dot)
   { x: 56, y: 54 }, // 7  RCM
   { x: 84, y: 18 }, // 8  LW
   { x: 88, y: 39 }, // 9  ST

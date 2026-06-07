@@ -6,20 +6,22 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-  LayoutDashboard,
-  History,
-  ListOrdered,
-  Swords,
-  BarChart3,
-  Users,
-  Globe,
   MessageSquare,
-  Crown,
   LogOut,
   Search as SearchIcon,
   PanelLeftClose,
   PanelLeftOpen,
+  Swords,
 } from 'lucide-react'
+import {
+  SquaresFour,
+  SoccerBall,
+  Ranking,
+  Shield,
+  TShirt,
+  Trophy,
+  CrownSimple,
+} from '@phosphor-icons/react'
 import { SearchOverlay } from '@/components/SearchOverlay'
 import { AnalystPanel } from '@/components/AnalystPanel'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
@@ -44,14 +46,14 @@ const LS_KEY = 'ballerz_sidebar_collapsed'
 
 // Chat is rendered separately as a floating top-right button, not in this list.
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/dashboard',    icon: LayoutDashboard },
-  { name: 'Matches',   href: '/matches',      icon: History },
-  { name: 'Standings', href: '/standings',    icon: ListOrdered },
-  { name: 'H2H',       href: '/head-to-head', icon: Swords },
-  { name: 'Clubs',     href: '/clubs',        icon: BarChart3 },
-  { name: 'Players',   href: '/players',      icon: Users },
-  { name: 'World Cup', href: '/world-cup',    icon: Globe },
-  { name: 'PRO',       href: '/premium',      icon: Crown },
+  { name: 'Dashboard',   href: '/dashboard',    icon: SquaresFour },
+  { name: 'World Cup',   href: '/world-cup',    icon: Trophy },
+  { name: 'Matches',     href: '/matches',      icon: SoccerBall },
+  { name: 'Standings',   href: '/standings',    icon: Ranking },
+  { name: 'H2H',         href: '/head-to-head', icon: Swords },
+  { name: 'Clubs',       href: '/clubs',        icon: Shield },
+  { name: 'Players',     href: '/players',      icon: TShirt },
+  { name: 'BallerZ Pro', href: '/premium',      icon: CrownSimple },
 ]
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
@@ -228,7 +230,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         {/* Quick Search trigger */}
         <NavRow
           collapsed={collapsed && !isMobile}
-          icon={<SearchIcon className="w-5 h-5" />}
+          icon={<SearchIcon className="w-6 h-6" />}
           label="Quick search"
           onClick={() => {
             setSearchOpen(true)
@@ -250,9 +252,20 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 collapsed={collapsed && !isMobile}
                 active={active}
-                icon={<Icon className="w-5 h-5" />}
+                icon={
+                  item.name === 'World Cup'
+                    ? <span aria-hidden className="wc-trophy inline-block w-6 h-[29px] bg-current" style={{ WebkitMaskImage: 'url(/worldcup-trophy-icon.png)', maskImage: 'url(/worldcup-trophy-icon.png)', WebkitMaskSize: '86% 100%', maskSize: '86% 100%', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />
+                    : item.name === 'Matches'
+                      ? <span aria-hidden className="inline-block w-6 h-6 bg-current" style={{ WebkitMaskImage: 'url(/football-icon.png)', maskImage: 'url(/football-icon.png)', WebkitMaskSize: 'contain', maskSize: 'contain', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />
+                      : item.name === 'H2H'
+                        ? <Swords className="w-6 h-6" strokeWidth={2.2} />
+                        : item.name === 'Clubs'
+                          ? <CrestIcon className="w-6 h-6" />
+                          : item.name === 'Players'
+                            ? <JerseyIcon className="w-6 h-6" />
+                            : <Icon className="w-6 h-6" weight="fill" />}
                 label={item.name}
-                pro={item.name === 'PRO'}
+                pro={item.name === 'BallerZ Pro'}
                 onClick={isMobile ? () => setMobileOpen(false) : undefined}
               />
             )
@@ -262,7 +275,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         {/* Logout pinned at bottom */}
         <NavRow
           collapsed={collapsed && !isMobile}
-          icon={<LogOut className="w-5 h-5" />}
+          icon={<LogOut className="w-6 h-6" />}
           label="Logout"
           onClick={handleLogout}
           danger
@@ -321,6 +334,28 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   )
 }
 
+/** Club crest — heraldic shield: top banner, double edge, central crest shape (Clubs nav icon). */
+function CrestIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="5.6" y="2.4" width="12.8" height="3" rx="1.3" fill="currentColor" />
+      <path d="M5 6.4 H19 V11.6 C19 17 15.5 20.2 12 21.8 C8.5 20.2 5 17 5 11.6 Z" fill="currentColor" />
+      <path d="M6.8 7.9 H17.2 V11.6 C17.2 16 14.5 18.7 12 20.1 C9.5 18.7 6.8 16 6.8 11.6 Z" fill="none" stroke="#0a0f1c" strokeWidth="0.85" />
+      <path d="M12 9.7 C13.7 9.7 14.7 10.9 14.7 12.5 C14.7 14.4 13 15.9 12 17.1 C11 15.9 9.3 14.4 9.3 12.5 C9.3 10.9 10.3 9.7 12 9.7 Z" fill="#0a0f1c" />
+    </svg>
+  )
+}
+
+/** Jersey back with the number 9 — Players nav icon. */
+function JerseyIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M9 4.2 Q12 6 15 4.2 L18.3 5 L21 7.8 L18.6 9.8 L16.8 8.6 L16.8 20 L7.2 20 L7.2 8.6 L5.4 9.8 L3 7.8 L5.7 5 Z" fill="currentColor" />
+      <text x="12" y="15.8" textAnchor="middle" fontSize="9" fontWeight="900" fill="#0a0f1c" fontFamily="var(--font-sans), sans-serif">9</text>
+    </svg>
+  )
+}
+
 /**
  * Single nav-list row. Renders as a Link when href is provided, otherwise a button.
  * Adapts layout based on collapsed state.
@@ -348,7 +383,7 @@ function NavRow({
 }) {
   const base = `group relative flex items-center transition-colors
                 ${collapsed ? 'self-center w-12 h-12 justify-center rounded-xl'
-                            : 'mx-2 px-2.5 h-11 rounded-lg gap-3'}`
+                            : 'mx-2 px-2.5 h-12 rounded-lg gap-3'}`
 
   const stateClasses = active
     ? (pro ? 'bg-accent-amber/[0.12] text-accent-amber' : 'bg-accent-emerald/12 text-accent-emerald')
@@ -360,9 +395,9 @@ function NavRow({
 
   const content = (
     <>
-      <span className="shrink-0">{icon}</span>
+      <span className="shrink-0 flex items-center justify-center w-6 h-6">{icon}</span>
       {!collapsed && (
-        <span className="text-[14px] font-medium whitespace-nowrap flex-1 truncate">
+        <span className="text-[15px] font-medium whitespace-nowrap flex-1 truncate">
           {label}
         </span>
       )}
@@ -373,7 +408,7 @@ function NavRow({
       {active && (
         <motion.span
           layoutId="sidebar-active-indicator"
-          className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full ${pro ? 'bg-accent-amber' : 'bg-accent-emerald'}`}
+          className={`absolute left-0 top-0 bottom-0 m-auto w-[3px] h-6 rounded-r-full ${pro ? 'bg-accent-amber' : 'bg-accent-emerald'}`}
           aria-hidden="true"
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
