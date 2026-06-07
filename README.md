@@ -81,7 +81,7 @@ Full per-match stats: scores, half-time scores, shots, shots on target, fouls, c
                         v
                   ┌────────────┐
                   │   Groq     │
-                  │ LLaMA 3.3 │
+                  │ LLaMA 3.3  │
                   └────────────┘
 ```
 
