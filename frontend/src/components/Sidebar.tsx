@@ -350,8 +350,35 @@ function CrestIcon({ className }: { className?: string }) {
 function JerseyIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="M9 4.2 Q12 6 15 4.2 L18.3 5 L21 7.8 L18.6 9.8 L16.8 8.6 L16.8 20 L7.2 20 L7.2 8.6 L5.4 9.8 L3 7.8 L5.7 5 Z" fill="currentColor" />
-      <text x="12" y="15.8" textAnchor="middle" fontSize="9" fontWeight="900" fill="#0a0f1c" fontFamily="var(--font-sans), sans-serif">9</text>
+      {/* Main jersey outline */}
+      <path 
+        d="M 8.5 3.5 Q 12 5.5 15.5 3.5 L 18.8 4.8 L 21.5 11 L 18 11 L 18 21.5 L 6 21.5 L 6 11 L 2.5 11 L 5.2 4.8 Z" 
+        stroke="currentColor" 
+        strokeWidth="1.6" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        fill="none"
+      />
+      {/* Sleeve/body separator lines */}
+      <path d="M 6 11 L 6.8 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 18 11 L 17.2 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      
+      {/* Sleeve stripes */}
+      <path d="M 3.0 9.5 L 6.2 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 21.0 9.5 L 17.8 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* Number 9 centered in the middle of the body */}
+      <text 
+        x="12" 
+        y="15.8" 
+        textAnchor="middle" 
+        fontSize="8.5" 
+        fontWeight="800" 
+        fill="currentColor" 
+        fontFamily="var(--font-sans), sans-serif"
+      >
+        9
+      </text>
     </svg>
   )
 }

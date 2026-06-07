@@ -15,9 +15,9 @@ export function AnimatedLogo({
 }) {
   // Brand scaling constraints
   const sizes = {
-    sm: { width: 135, height: 38 },
-    md: { width: 175, height: 48 },
-    lg: { width: 260, height: 72 },
+    sm: { width: 140, height: 36 },
+    md: { width: 172, height: 44 },
+    lg: { width: 280, height: 72 },
   }
 
   const { width, height } = sizes[size]
@@ -62,7 +62,7 @@ export function AnimatedLogo({
   return (
     <div className="logo-anim flex items-center" style={{ width, height }}>
       <svg
-        viewBox="0 0 200 50"
+        viewBox="0 0 195 50"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full select-none logo-image"
@@ -102,35 +102,8 @@ export function AnimatedLogo({
           letterSpacing="-0.03em"
           fontStyle="italic"
         >
-          Baller<tspan fill="url(#logo-grad)">Z</tspan>
+          Baller<tspan fill="url(#logo-grad)">Z</tspan> <tspan fill="#10b981">HQ</tspan>
         </text>
-
-        {/* Glowing HQ Badge */}
-        <g transform="translate(138, 16)">
-          <rect
-            x="0"
-            y="0"
-            width="34"
-            height="18"
-            rx="5"
-            stroke="url(#logo-grad)"
-            strokeWidth="1.5"
-            strokeDasharray="2 1.5"
-            fill="rgba(16, 185, 129, 0.08)"
-          />
-          <text
-            x="17"
-            y="12.5"
-            textAnchor="middle"
-            fill="#10b981"
-            fontSize="9"
-            fontWeight="bold"
-            fontFamily="var(--font-mono), monospace"
-            letterSpacing="0.05em"
-          >
-            HQ
-          </text>
-        </g>
 
         {/* Monospaced Subtitle if withSubtitle is true */}
         {withSubtitle && (

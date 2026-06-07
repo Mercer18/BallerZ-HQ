@@ -6,8 +6,9 @@ import Link from 'next/link'
 import {
   ChevronRight, ChevronDown, ArrowRight, Search, ListOrdered, Swords, BarChart3, Bot,
   Crown, Check, Mail, CheckCircle2, Trophy, Users, Sparkles,
-  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock
+  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock, MessageSquare
 } from 'lucide-react'
+import { Ranking } from '@phosphor-icons/react'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { AmbientParticles } from '@/components/AmbientParticles'
 import { EliteBackground } from '@/components/EliteBackground'
@@ -99,6 +100,9 @@ function PageContent() {
   const tables = useCounter(1562)
   const players = useCounter(25257)
   const seasons = useCounter(16)
+  const leagues = useCounter(5)
+  const wcTeams = useCounter(48)
+  const wcMatches = useCounter(104)
 
   // Custom Cursor logic
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -168,28 +172,6 @@ function PageContent() {
     checkAuth()
   }, [])
 
-  const [featuresLeft, setFeaturesLeft] = useState<number | null>(null)
-  const [ballerzLeft, setBallerzLeft] = useState<number | null>(null)
-
-  useEffect(() => {
-    const update = () => {
-      const dot1 = document.getElementById('stats-dot-1')
-      const dot2 = document.getElementById('stats-dot-2')
-      if (dot1 && dot2) {
-        setFeaturesLeft(dot1.getBoundingClientRect().left)
-        setBallerzLeft(dot2.getBoundingClientRect().left)
-      }
-    }
-    update()
-    window.addEventListener('resize', update)
-    const interval = setInterval(update, 100)
-    const timeout = setTimeout(() => clearInterval(interval), 3000)
-    return () => {
-      window.removeEventListener('resize', update)
-      clearInterval(interval)
-      clearTimeout(timeout)
-    }
-  }, [])
 
   return (
     <div className="min-h-screen text-white relative">
@@ -200,7 +182,7 @@ function PageContent() {
       <nav
         className="fixed top-0 w-full z-50 h-[56px]"
         style={{
-          background: 'rgba(8,11,16,0.72)',
+          background: 'rgba(0,0,0,0.78)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(52,211,153,0.38)',
@@ -211,25 +193,25 @@ function PageContent() {
         <div className="absolute inset-0 pointer-events-none hidden md:block">
           <button
             onClick={() => document.getElementById('platform')?.scrollIntoView({ behavior: 'smooth' })}
-            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.18em] transition-colors"
-            style={{ left: featuresLeft !== null ? `${featuresLeft}px` : 'calc(50% - 190px)' }}
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-[0.18em] transition-colors group"
+            style={{ right: 'calc(50% + 40px)' }}
             {...interactiveProps}
           >
-            Features
+            <span className="text-sheen-sweep-emerald">Features</span> <TacticsIcon className="w-[23px] h-[23px] -translate-y-[2.5px] text-accent-emerald/80 group-hover:text-accent-emerald transition-colors" />
           </button>
           <button
             onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto flex items-center gap-1.5 text-[11px] font-bold text-accent-amber hover:text-accent-amber/70 uppercase tracking-[0.18em] transition-colors"
-            style={{ left: ballerzLeft !== null ? `${ballerzLeft}px` : 'calc(50% + 40px)' }}
+            className="absolute top-1/2 -translate-y-1/2 pointer-events-auto flex items-center gap-1.5 text-[13px] font-bold tracking-[0.18em] transition-colors group"
+            style={{ left: 'calc(50% + 40px)' }}
             {...interactiveProps}
           >
-            BallerZ Pro <Crown className="w-3 h-3" />
+            <span className="text-sheen-sweep-gold">BallerZ Pro</span> <Crown className="w-[23px] h-[23px] -translate-y-[0.5px] text-accent-amber/80 group-hover:text-accent-amber transition-colors" />
           </button>
         </div>
 
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center select-none" {...interactiveProps}>
-            <AnimatedLogo size="sm" />
+            <AnimatedLogo size="md" />
           </Link>
 
           {/* Right auth buttons */}
@@ -246,14 +228,14 @@ function PageContent() {
               <>
                 <Link
                   href="/login"
-                  className="glass-pill !py-2 !px-4 !text-[12px] !font-semibold"
+                  className="header-btn-glass-amber"
                   {...interactiveProps}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="glass-pill glass-pill-emerald !py-2 !px-4 !text-[12px] !font-semibold"
+                  className="header-btn-solid-emerald"
                   {...interactiveProps}
                 >
                   Get Started <ChevronRight className="w-3.5 h-3.5" />
@@ -275,7 +257,7 @@ function PageContent() {
             <div
               className="lift inline-flex items-center gap-2.5 font-mono text-[10px] tracking-[0.25em] uppercase px-4 py-2 rounded-full sheen"
               style={{
-                background: 'rgba(8,11,16,0.72)',
+                background: 'rgba(0,0,0,0.68)',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
                 border: '1px solid rgba(52,211,153,0.38)',
@@ -288,7 +270,7 @@ function PageContent() {
                 <span className="absolute inset-0 rounded-full bg-accent-emerald pulse-ring" />
                 <span className="absolute inset-0 rounded-full bg-accent-emerald" />
               </span>
-              <span><b ref={matches.ref} className="text-accent-emerald font-bold tabular-nums">{matches.count.toLocaleString()}</b> matches <span id="stats-dot-1">·</span> <b ref={players.ref} className="text-accent-emerald font-bold tabular-nums">{players.count.toLocaleString()}</b> players <span id="stats-dot-2">·</span> <b className="text-accent-emerald font-bold">5</b> leagues · <b ref={seasons.ref} className="text-accent-emerald font-bold tabular-nums">{seasons.count}</b> seasons</span>
+              <span><b ref={matches.ref} className="text-accent-emerald font-bold tabular-nums">{matches.count.toLocaleString()}</b> matches · <b ref={players.ref} className="text-accent-emerald font-bold tabular-nums">{players.count.toLocaleString()}</b> players <span id="stats-dot-1">·</span> <b ref={leagues.ref} className="text-accent-emerald font-bold tabular-nums">{leagues.count}</b> leagues · <b ref={seasons.ref} className="text-accent-emerald font-bold tabular-nums">{seasons.count}</b> seasons <span id="stats-dot-2">·</span> <b ref={wcTeams.ref} className="text-accent-emerald font-bold tabular-nums">{wcTeams.count}</b> wc teams · <b ref={wcMatches.ref} className="text-accent-emerald font-bold tabular-nums">{wcMatches.count}</b> wc matches</span>
             </div>
 
             {/* Headline — Fraunces editorial (V3 spec): Every / number. / your team. */}
@@ -306,11 +288,14 @@ function PageContent() {
             </p>
 
             {/* CTAs — Magnetic emerald "Pick your club" + amber glass Pro pill */}
-            <div className="lift lift-d2 flex flex-wrap justify-center pt-1" style={{ gap: '0.825rem', marginLeft: '-0.825em' }}>
+            <div className="lift lift-d2 flex flex-wrap justify-center pt-1 relative" style={{ gap: '0.825rem', marginLeft: '-0.825em' }}>
+              {/* Soft dark shadow backdrop to make the glass pills stand out over the bright ball graphic */}
+              <div className="absolute inset-0 -m-5 bg-black/38 blur-2xl rounded-full pointer-events-none" style={{ zIndex: 0 }} />
+              
               <Link
                 href={isLoggedIn ? '/dashboard' : '/signup'}
                 data-magnet
-                className="glass-pill glass-pill-emerald"
+                className="glass-pill glass-pill-emerald relative z-10"
                 {...interactiveProps}
               >
                 <span>{isLoggedIn ? 'Open your hub' : 'Pick your club'}</span>
@@ -319,7 +304,7 @@ function PageContent() {
               <button
                 onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                 data-magnet
-                className="glass-pill glass-pill-amber"
+                className="glass-pill glass-pill-amber relative z-10"
                 {...interactiveProps}
               >
                 <Crown className="w-4 h-4" /> <span>Explore Pro</span>
@@ -356,8 +341,103 @@ function PageContent() {
           {/* 2-col feature grid (reference .cap-grid) */}
           <div className="grid md:grid-cols-2 gap-5">
 
-            {/* 01 — Match Browser */}
-            <FCard ord="01" label="Match Analysis" title="Match Browser"
+            {/* 01 — World Cup Mode */}
+            <FCard ord="01" label="International Tournament"
+              title={
+                <>
+                  World Cup Predictor
+                  <span aria-hidden className="wc-trophy inline-block bg-current shrink-0" style={{ width: '35px', height: '42px', WebkitMaskImage: 'url(/worldcup-trophy-icon.png)', maskImage: 'url(/worldcup-trophy-icon.png)', WebkitMaskSize: '86% 100%', maskSize: '86% 100%', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />
+                </>
+              }
+              desc={<>Simulate the historic 2026 expansion to 48 nations and 104 matches starting June 2026. Predictions are powered by <span className="text-accent-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.45)] font-bold">Match IQ</span>—an Elo-based system (assessing historical team strength since 1872) combined with a Poisson distribution to calculate goal-by-goal probabilities.</>}
+              meta="Elo ratings handle relative team form, while the Poisson model estimates exact scoreline probabilities (e.g. 1-0, 2-1) for tournament brackets."
+              leftContent={
+                <div className="mt-5 bg-white/[0.02] border border-white/[0.05] rounded-xl p-3.5 max-w-[440px]">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent-emerald mb-2.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse-glow" style={{ animationName: 'pulseGlow' }} />
+                    Top 5 <span className="text-accent-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.45)] font-bold">Match IQ</span> Elo Ratings
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 text-center">
+                    <div className="bg-white/[0.02] border border-white/[0.04] p-1.5 rounded flex flex-col items-center">
+                      <img src="https://flagcdn.com/w20/es.png" alt="ESP" className="h-2.5 w-3.5 object-cover rounded-sm border border-white/10 mb-1" />
+                      <div className="text-[9px] text-slate-450 font-bold uppercase font-mono">ESP</div>
+                      <div className="font-serif font-semibold text-accent-emerald text-[11px] mt-0.5">2216</div>
+                    </div>
+                    <div className="bg-white/[0.02] border border-white/[0.04] p-1.5 rounded flex flex-col items-center">
+                      <img src="https://flagcdn.com/w20/ar.png" alt="ARG" className="h-2.5 w-3.5 object-cover rounded-sm border border-white/10 mb-1" />
+                      <div className="text-[9px] text-slate-450 font-bold uppercase font-mono">ARG</div>
+                      <div className="font-serif font-semibold text-accent-emerald text-[11px] mt-0.5">2185</div>
+                    </div>
+                    <div className="bg-white/[0.02] border border-white/[0.04] p-1.5 rounded flex flex-col items-center">
+                      <img src="https://flagcdn.com/w20/fr.png" alt="FRA" className="h-2.5 w-3.5 object-cover rounded-sm border border-white/10 mb-1" />
+                      <div className="text-[9px] text-slate-450 font-bold uppercase font-mono">FRA</div>
+                      <div className="font-serif font-semibold text-accent-emerald text-[11px] mt-0.5">2138</div>
+                    </div>
+                    <div className="bg-white/[0.02] border border-white/[0.04] p-1.5 rounded flex flex-col items-center">
+                      <img src="https://flagcdn.com/w20/gb-eng.png" alt="ENG" className="h-2.5 w-3.5 object-cover rounded-sm border border-white/10 mb-1" />
+                      <div className="text-[9px] text-slate-450 font-bold uppercase font-mono">ENG</div>
+                      <div className="font-serif font-semibold text-accent-emerald text-[11px] mt-0.5">2079</div>
+                    </div>
+                    <div className="bg-white/[0.02] border border-white/[0.04] p-1.5 rounded flex flex-col items-center">
+                      <img src="https://flagcdn.com/w20/br.png" alt="BRA" className="h-2.5 w-3.5 object-cover rounded-sm border border-white/10 mb-1" />
+                      <div className="text-[9px] text-slate-450 font-bold uppercase font-mono">BRA</div>
+                      <div className="font-serif font-semibold text-accent-emerald text-[11px] mt-0.5">2057</div>
+                    </div>
+                  </div>
+                </div>
+              }
+              horizontal>
+              <MiniWidget head={<span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">MATCH IQ PREDICTOR</span>} live>
+                <div className="flex items-center justify-between py-1.5 text-xs text-slate-400 border-b border-white/[0.04] mb-2">
+                  <span>Tournament Simulation &bull; Showcase Matchup</span>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between py-2 text-[13px] border-b border-white/[0.04]">
+                    <span className="flex items-center gap-2" style={{ color: '#A9ADB6' }}>
+                      <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" className="w-4 h-3 object-cover rounded-sm border border-white/10" />
+                      <span className="font-semibold text-text-primary">Argentina</span>
+                    </span>
+                    <span className="font-serif font-semibold tabular-nums text-accent-emerald">39.4%</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 text-[13px] border-b border-white/[0.04]">
+                    <span className="flex items-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        className="w-4 h-4 text-slate-400 shrink-0"
+                      >
+                        <line x1="6" y1="9" x2="18" y2="9" />
+                        <line x1="6" y1="15" x2="18" y2="15" />
+                      </svg>
+                      <span className="font-semibold text-slate-200">Draw</span>
+                    </span>
+                    <span className="font-serif font-semibold tabular-nums text-slate-200">27.8%</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 text-[13px]">
+                    <span className="flex items-center gap-2" style={{ color: '#A9ADB6' }}>
+                      <img src="https://flagcdn.com/w40/pt.png" alt="Portugal" className="w-4 h-3 object-cover rounded-sm border border-white/10" />
+                      <span className="font-semibold text-text-primary">Portugal</span>
+                    </span>
+                    <span className="font-serif font-semibold tabular-nums text-slate-400">32.8%</span>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/[0.04] text-[11px] text-slate-400 font-mono leading-relaxed">
+                  <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">Match IQ Verdict:</span> Argentina holds a slight mathematical edge (39.4%) to advance.
+                </div>
+              </MiniWidget>
+            </FCard>
+
+            {/* 02 — Match Browser */}
+            <FCard ord="02" label="Match Analysis"
+              title={
+                <>
+                  Match Browser
+                  <span aria-hidden className="inline-block bg-current shrink-0" style={{ width: '36px', height: '36px', marginLeft: '6px', WebkitMaskImage: 'url(/football-icon.png)', maskImage: 'url(/football-icon.png)', WebkitMaskSize: 'contain', maskSize: 'contain', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />
+                </>
+              }
               desc="Browse every match across 5 leagues and 16 seasons. Scores, lineups, referees, cards, corners, and xG timelines."
               meta="16 seasons · 5 leagues">
               <MiniWidget head="Match Feed" live>
@@ -367,8 +447,14 @@ function PageContent() {
               </MiniWidget>
             </FCard>
 
-            {/* 02 — League Standings */}
-            <FCard ord="02" label="Table History" title="League Standings"
+            {/* 03 — League Standings */}
+            <FCard ord="03" label="Table History"
+              title={
+                <>
+                  League Standings
+                  <Ranking className="shrink-0" weight="fill" style={{ width: '42px', height: '42px', marginLeft: '6px' }} />
+                </>
+              }
               desc="Historical table snapshots across every season and competition. Form curves, matchday splits, custom campaigns.">
               <MiniWidget head="Club" headRight="Pts">
                 <MiniRow tm={<><span className="text-accent-emerald font-bold mr-2 tabular-nums">1</span>Real Madrid</>} val="92" valClass="text-text-primary" />
@@ -377,8 +463,14 @@ function PageContent() {
               </MiniWidget>
             </FCard>
 
-            {/* 03 — Head-to-Head */}
-            <FCard ord="03" label="Club Comparison" title="Head-to-Head"
+            {/* 04 — Head-to-Head */}
+            <FCard ord="04" label="Club Comparison"
+              title={
+                <>
+                  Head-to-Head
+                  <Swords className="shrink-0" strokeWidth={2.2} style={{ width: '33px', height: '35px', marginLeft: '6px' }} />
+                </>
+              }
               desc="Compare any two clubs across 16 seasons. Win rates, goal ratios, and outcome margins computed instantly.">
               <MiniWidget head="H2H Record" headRight="Last 10">
                 <MiniRow tm="Real Madrid Wins" val="5" />
@@ -387,20 +479,14 @@ function PageContent() {
               </MiniWidget>
             </FCard>
 
-            {/* 04 — Club IQ (gold flagship) */}
-            <FCard ord="04" gold label="Ask Your Club" title="Club IQ"
-              desc="Ask anything about your club in plain English — form, results, top scorers, season history. Answers grounded in your data only, zero hallucination."
-              meta="Free now · Pro unlocks advanced analysis">
-              <MiniWidget>
-                <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-accent-emerald mb-2">Your Question</div>
-                <div className="font-serif italic text-[13px] leading-snug mb-3" style={{ color: '#A9ADB6' }}>&ldquo;How&apos;s our form going into the run-in?&rdquo;</div>
-                <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-accent-emerald mb-1.5">Club IQ Says</div>
-                <div className="text-[13px] leading-relaxed" style={{ color: '#A9ADB6' }}>You&apos;re on a <b className="text-text-primary">3-game win streak</b> — 4 wins in the last 5, scoring 11 and conceding 3. Best run of the season.</div>
-              </MiniWidget>
-            </FCard>
-
             {/* 05 — Club Deep-Dive */}
-            <FCard ord="05" label="Club Profile" title="Club Deep-Dive"
+            <FCard ord="05" label="Club Profile"
+              title={
+                <>
+                  Club Deep-Dive
+                  <CrestIcon className="shrink-0" style={{ width: '45px', height: '42px', marginLeft: '6px' }} />
+                </>
+              }
               desc="Full profile analytics. xG trends, press intensity curves, and player composition across every season in the dataset.">
               <MiniWidget head="Tactical Metrics" headRight="Value">
                 <MiniRow tm="Field Tilt" val="64.5%" />
@@ -410,13 +496,37 @@ function PageContent() {
             </FCard>
 
             {/* 06 — Players (gold flagship) */}
-            <FCard ord="06" gold label="Player Database" title="Player Stats"
+            <FCard ord="06" gold label="Player Database"
+              title={
+                <>
+                  Player Stats
+                  <JerseyIcon className="shrink-0" style={{ width: '45px', height: '46px', marginLeft: '6px' }} />
+                </>
+              }
               desc="25,000+ player records from FBref — goals, assists, minutes, xG, progressive actions. Filter by league, season, or club."
               meta="Free now · Pro unlocks xG &amp; scouting">
               <MiniWidget head="Top Scorers" headRight="2025-26">
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">1</span>Salah</>} val="19" />
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">2</span>Haaland</>} val="18" valClass="text-text-primary" />
                 <MiniRow tm={<><span className="text-accent-amber font-bold mr-2 tabular-nums">3</span>Palmer</>} val="16" valClass="text-text-primary" />
+              </MiniWidget>
+            </FCard>
+
+            {/* 07 — Club IQ (gold flagship) */}
+            <FCard ord="07" gold label="Ask Your Club"
+              title={
+                <>
+                  Club IQ
+                  <MessageSquare className="shrink-0" style={{ width: '33px', height: '35px', marginLeft: '6px' }} />
+                </>
+              }
+              desc="Ask anything about your club in plain English — form, results, top scorers, season history. Answers grounded in your data only, zero hallucination."
+              meta="Free now · Pro unlocks advanced analysis">
+              <MiniWidget>
+                <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-accent-emerald mb-2">Your Question</div>
+                <div className="font-serif italic text-[13px] leading-snug mb-3" style={{ color: '#A9ADB6' }}>&ldquo;How&apos;s our form going into the run-in?&rdquo;</div>
+                <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-accent-emerald mb-1.5">Club IQ Says</div>
+                <div className="text-[13px] leading-relaxed" style={{ color: '#A9ADB6' }}>You&apos;re on a <b className="text-text-primary">3-game win streak</b> — 4 wins in the last 5, scoring 11 and conceding 3. Best run of the season.</div>
               </MiniWidget>
             </FCard>
 
@@ -566,33 +676,133 @@ function PageContent() {
   )
 }
 
+// Custom SVGs matching the dashboard sidebar icons
+function CrestIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} style={style} aria-hidden="true">
+      <rect x="5.6" y="2.4" width="12.8" height="3" rx="1.3" fill="currentColor" />
+      <path d="M5 6.4 H19 V11.6 C19 17 15.5 20.2 12 21.8 C8.5 20.2 5 17 5 11.6 Z" fill="currentColor" />
+      <path d="M6.8 7.9 H17.2 V11.6 C17.2 16 14.5 18.7 12 20.1 C9.5 18.7 6.8 16 6.8 11.6 Z" fill="none" stroke="#0a0f1c" strokeWidth="0.85" />
+      <path d="M12 9.7 C13.7 9.7 14.7 10.9 14.7 12.5 C14.7 14.4 13 15.9 12 17.1 C11 15.9 9.3 14.4 9.3 12.5 C9.3 10.9 10.3 9.7 12 9.7 Z" fill="#0a0f1c" />
+    </svg>
+  )
+}
+
+function JerseyIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} style={style} aria-hidden="true">
+      {/* Main jersey outline */}
+      <path 
+        d="M 8.5 3.5 Q 12 5.5 15.5 3.5 L 18.8 4.8 L 21.5 11 L 18 11 L 18 21.5 L 6 21.5 L 6 11 L 2.5 11 L 5.2 4.8 Z" 
+        stroke="currentColor" 
+        strokeWidth="1.6" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        fill="none"
+      />
+      {/* Sleeve/body separator lines */}
+      <path d="M 6 11 L 6.8 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 18 11 L 17.2 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      
+      {/* Sleeve stripes */}
+      <path d="M 3.0 9.5 L 6.2 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 21.0 9.5 L 17.8 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* Number 9 centered in the middle of the body */}
+      <text 
+        x="12" 
+        y="15.8" 
+        textAnchor="middle" 
+        fontSize="8.5" 
+        fontWeight="800" 
+        fill="currentColor" 
+        fontFamily="var(--font-sans), sans-serif"
+      >
+        9
+      </text>
+    </svg>
+  )
+}
+
+function TacticsIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} style={style} aria-hidden="true">
+      <defs>
+        <filter id="goalpost-shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0.5" dy="0.8" stdDeviation="0.6" floodColor="#000000" floodOpacity="0.95" />
+        </filter>
+      </defs>
+
+      {/* Net support structure (thinner and translucent) */}
+      <path 
+        d="M2 19 H7.5 M16.5 23 H23.5 M4.3 3.6 L7.5 7.8 M14.7 7.1 L23.5 12.5 M7.5 7.8 V19 M23.5 12.5 V23 M7.5 7.8 L23.5 12.5 M7.5 19 L23.5 23" 
+        stroke="currentColor" 
+        strokeWidth="0.8" 
+        opacity="0.65" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      />
+
+      {/* Net grid lines (very thin and faint) */}
+      <path 
+        d="M11.5 9.0 V20.0 M15.5 10.2 V21.0 M19.5 11.3 V22.0 M7.5 11 L23.5 15.5 M7.5 14.5 L23.5 19 M2 9 L7.5 11 M2 13 L7.5 14.5 M4.7 6.2 V19 M16.5 15.5 L23.5 15.5 M16.5 19 L23.5 19 M20 12.5 V23" 
+        stroke="currentColor" 
+        strokeWidth="0.6" 
+        opacity="0.45" 
+        strokeLinecap="round" 
+      />
+
+      {/* Main Goal posts and crossbar (bold foreground in perspective) */}
+      <path 
+        d="M2 19 V5 C2 3.8 3.2 3.3 4.3 3.6 L14.7 7.1 C15.8 7.4 16.5 8.3 16.5 9.5 V23" 
+        stroke="#34D399" 
+        strokeWidth="2.3" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        filter="url(#goalpost-shadow)"
+      />
+    </svg>
+  )
+}
+
+
+
+
+
+
 // ── Landing features helpers (reference .fcard / .mini) ──
-function FCard({ ord, label, title, desc, meta, gold = false, pro = false, children }: {
-  ord: string; label: string; title: string; desc: string; meta?: string
-  gold?: boolean; pro?: boolean; children?: React.ReactNode
+function FCard({ ord, label, title, desc, meta, gold = false, pro = false, horizontal = false, leftContent, children }: {
+  ord: string; label: string; title: React.ReactNode; desc: React.ReactNode; meta?: string
+  gold?: boolean; pro?: boolean; horizontal?: boolean; leftContent?: React.ReactNode; children?: React.ReactNode
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[18px] p-8 border border-white/[0.07] bg-[rgba(16,18,22,0.55)] hover:border-accent-emerald/30 hover:-translate-y-1 transition-all duration-300 group">
+    <div className={`relative overflow-hidden rounded-[18px] p-8 border border-white/[0.07] bg-[rgba(16,18,22,0.55)] hover:border-accent-emerald/30 hover:-translate-y-1 transition-all duration-300 group ${horizontal ? 'md:col-span-2' : ''}`}>
       <span className="absolute right-4 -bottom-5 font-serif font-semibold text-[140px] leading-none text-white/[0.025] select-none pointer-events-none">{ord}</span>
-      <div className="relative z-10">
-        <div className="relative pl-4 mb-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
-          <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-3.5 rounded-sm ${gold ? 'bg-accent-gold' : 'bg-accent-emerald'}`} />
-          {label}
+      <div className={`relative z-10 ${horizontal ? 'flex flex-col md:flex-row md:items-center justify-between gap-8 w-full' : ''}`}>
+        <div className={horizontal ? 'flex-1' : ''}>
+          <div className="relative pl-4 mb-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
+            <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-3.5 rounded-sm ${gold ? 'bg-accent-gold' : 'bg-accent-emerald'}`} />
+            {label}
+          </div>
+          <h3 className="font-serif text-[27px] font-semibold tracking-[-0.01em] text-text-primary mb-3.5 flex items-center gap-2.5">
+            {title}
+            {pro && <span className="text-[9px] font-extrabold tracking-[0.1em] text-accent-gold border border-accent-gold/40 rounded px-1.5 py-0.5 uppercase">Pro</span>}
+          </h3>
+          <p className={`text-[14.5px] leading-relaxed ${horizontal ? 'max-w-[580px]' : 'max-w-[440px]'}`} style={{ color: '#A9ADB6' }}>{desc}</p>
+          {leftContent}
+          {horizontal && meta && <div className="text-[10px] font-bold uppercase tracking-[0.12em] mt-5" style={{ color: '#474C58' }}>{meta}</div>}
         </div>
-        <h3 className="font-serif text-[27px] font-semibold tracking-[-0.01em] text-text-primary mb-3.5 flex items-center gap-2.5">
-          {title}
-          {pro && <span className="text-[9px] font-extrabold tracking-[0.1em] text-accent-gold border border-accent-gold/40 rounded px-1.5 py-0.5 uppercase">Pro</span>}
-        </h3>
-        <p className="text-[14.5px] leading-relaxed max-w-[440px]" style={{ color: '#A9ADB6' }}>{desc}</p>
-        {children}
-        {meta && <div className="text-[10px] font-bold uppercase tracking-[0.12em] mt-5" style={{ color: '#474C58' }}>{meta}</div>}
+        <div className={horizontal ? 'w-full md:w-[360px] shrink-0 mt-0' : ''}>
+          {children}
+        </div>
+        {!horizontal && meta && <div className="text-[10px] font-bold uppercase tracking-[0.12em] mt-5" style={{ color: '#474C58' }}>{meta}</div>}
       </div>
     </div>
   )
 }
 
 function MiniWidget({ head, headRight, live, children }: {
-  head?: string; headRight?: string; live?: boolean; children: React.ReactNode
+  head?: React.ReactNode; headRight?: React.ReactNode; live?: boolean; children: React.ReactNode
 }) {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[rgba(6,8,13,0.6)] p-4 mt-6">
