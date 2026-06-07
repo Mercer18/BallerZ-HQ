@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation'
  * on logged-in pages.
  */
 
-const PUBLIC_PATHS = ['/', '/login', '/signup', '/onboarding']
+const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding']
 
 export function ParticleNetwork({
   ballRadius = 7,

@@ -6,6 +6,12 @@ confirmation email is sent. This sidesteps Supabase's free-tier email rate limit
 (which was blocking all new sign-ups with "email rate limit exceeded"). The
 `on_auth_user_created` trigger still fires and populates `public.profiles` from
 the `username` metadata, so username-based login keeps working unchanged.
+
+Username (`profiles.username`) and email (`auth.users.email`) are both UNIQUE at
+the database level. We pre-check them here so a clash returns a clear, specific
+message. Without the pre-check, a duplicate username trips the profiles trigger's
+unique-violation, which GoTrue wraps as a generic "Database error saving new
+user" — unhelpful to the user. The DB constraints remain the real backstop.
 """
 
 import logging
@@ -36,6 +42,19 @@ async def signup(req: SignupRequest):
             status_code=400,
             detail="Username, email, and a password of at least 6 characters are required.",
         )
+
+    # Pre-check uniqueness for a friendly message. These mirror the DB constraints
+    # (and the username-login lookup, which is case-sensitive). The constraints
+    # themselves are still the authoritative guard if two requests race.
+    try:
+        if supabase.table("profiles").select("id").eq("username", username).limit(1).execute().data:
+            raise HTTPException(status_code=409, detail="That username is already taken.")
+        if supabase.table("profiles").select("id").eq("email", email).limit(1).execute().data:
+            raise HTTPException(status_code=409, detail="An account with that email already exists.")
+    except HTTPException:
+        raise
+    except Exception as e:  # noqa: BLE001 — pre-check is best-effort; create_user still guards
+        log.warning("Signup pre-check failed (continuing to create): %s", e)
 
     try:
         supabase.auth.admin.create_user(

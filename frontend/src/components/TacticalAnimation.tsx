@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation'
  * Hidden on landing / auth pages.
  */
 
-const PUBLIC_PATHS = ['/', '/login', '/signup', '/onboarding']
+const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding']
 
 type Phase = 'SETUP' | 'APPROACH' | 'KICK' | 'FLIGHT' | 'CONTACT' | 'OUTCOME' | 'RESET'
 type Outcome = 'GOAL' | 'SAVE' | 'CLEAR'

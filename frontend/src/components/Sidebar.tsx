@@ -35,7 +35,7 @@ import { CustomCursor } from '@/components/CustomCursor'
  * Renders pass-through on landing/login/signup/onboarding.
  */
 
-const HIDE_ON = ['/', '/login', '/signup', '/onboarding']
+const HIDE_ON = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding']
 
 const SIDEBAR_COLLAPSED = 76
 const SIDEBAR_EXPANDED = 220

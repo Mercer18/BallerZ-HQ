@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { MessageSquare } from 'lucide-react'
 
-const HIDDEN_ON = ['/', '/login', '/signup', '/onboarding', '/chat']
+const HIDDEN_ON = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding', '/chat']
 
 export function FloatingChatButton() {
   const pathname = usePathname()
