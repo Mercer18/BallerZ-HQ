@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ChevronRight, ChevronDown, ArrowRight, Search, ListOrdered, Swords, BarChart3, Bot,
   Crown, Check, Mail, CheckCircle2, Trophy, Users, Sparkles,
-  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock, Linkedin
+  Database, LineChart, Target, Calendar, ArrowUpRight, Shield, Lock
 } from 'lucide-react'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { AmbientParticles } from '@/components/AmbientParticles'
@@ -521,27 +521,44 @@ function PageContent() {
             <AnimatedLogo size="sm" />
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
               <div className="flex items-center gap-8">
-                <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Privacy Policy</Link>
-                <Link href="#" className="text-sm text-slate-450 hover:text-white transition-colors" {...interactiveProps}>Terms of Service</Link>
+                <Link href="/privacy" className="text-xs font-mono text-slate-200 hover:text-white transition-colors" {...interactiveProps}>Privacy Policy</Link>
+                <Link href="/terms" className="text-xs font-mono text-slate-200 hover:text-white transition-colors" {...interactiveProps}>Terms of Service</Link>
               </div>
-              <span className="text-xs text-slate-500 font-mono flex items-center gap-1.5">
-                Created by{' '}
-                <a href="mailto:rishi18022005@gmail.com" className="hover:text-accent-emerald transition-colors" {...interactiveProps}>
+              <span className="text-xs text-slate-200 font-mono flex items-center gap-4">
+                Created by
+                <a
+                  href="mailto:rishi18022005@gmail.com"
+                  className="px-3.5 py-1 rounded-full bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/25 hover:bg-accent-emerald/20 hover:border-accent-emerald/45 hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] transition-all duration-300 shadow-[0_0_12px_rgba(52,211,153,0.2)] font-bold animate-pulse-glow"
+                  {...interactiveProps}
+                >
                   Rishi Srivastava
                 </a>
                 <a
                   href="https://www.linkedin.com/in/rishisrivastava18"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-accent-emerald text-slate-400 transition-colors inline-flex items-center"
+                  className="ml-2 hover:text-accent-emerald text-slate-400 transition-all inline-flex items-center p-1.5 hover:bg-white/5 rounded-full hover:scale-110 duration-200"
                   title="LinkedIn Profile"
                   {...interactiveProps}
                 >
-                  <Linkedin className="w-3.5 h-3.5" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                    <rect x="2" y="9" width="4" height="12" />
+                    <circle cx="4" cy="4" r="2" />
+                  </svg>
                 </a>
               </span>
             </div>
-            <p className="text-sm text-slate-500">&copy; 2026 BallerZ HQ. All rights reserved.</p>
+            <p className="text-xs font-mono text-slate-200">&copy; 2026 BallerZ HQ. All rights reserved.</p>
           </div>
         </footer>
       </section>
