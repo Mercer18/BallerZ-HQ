@@ -3,6 +3,7 @@ import { Fraunces, Hanken_Grotesk, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Sidebar } from '@/components/Sidebar'
 import { ServerWakingBanner } from '@/components/ServerWakingBanner'
+import { CustomCursor } from '@/components/CustomCursor'
 
 // ── Design-system fonts (BallerZ V3 — editorial premium) ──
 // Hanken Grotesk = UI / body (--font-sans → Tailwind `font-sans`, spec's --fb)
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body className="font-sans antialiased text-white selection:bg-accent-emerald/30">
         <Sidebar>{children}</Sidebar>
         <ServerWakingBanner />
+        <CustomCursor />
       </body>
     </html>
   )

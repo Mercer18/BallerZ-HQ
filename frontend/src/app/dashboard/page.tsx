@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import { TrendingUp, MessageSquare, Search, ListOrdered, Swords, BarChart3, ChevronRight, Award, Sparkles, Flame, Trophy, Zap, Users, History, Crown, RefreshCw, CloudOff } from 'lucide-react'
+import { TrendingUp, MessageSquare, Search, Swords, BarChart3, ChevronRight, Award, Sparkles, Flame, Trophy, Zap, Crown, RefreshCw, CloudOff } from 'lucide-react'
+import { Ranking } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { FormChart } from '@/components/charts/FormChart'
 import { formatDate } from '@/lib/utils'
@@ -387,11 +388,11 @@ export default function Dashboard() {
 
         {/* Quick access */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          <QuickCard href="/matches" icon={<History className="w-4 h-4 text-accent-emerald" />} title="Matches" />
-          <QuickCard href="/standings" icon={<ListOrdered className="w-4 h-4 text-accent-emerald" />} title="Standings" />
+          <QuickCard href="/matches" icon={<span aria-hidden className="inline-block w-4 h-4 bg-current text-accent-emerald" style={{ WebkitMaskImage: 'url(/football-icon.png)', maskImage: 'url(/football-icon.png)', WebkitMaskSize: 'contain', maskSize: 'contain', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />} title="Matches" />
+          <QuickCard href="/standings" icon={<Ranking className="w-4 h-4 text-accent-emerald" />} title="Standings" />
           <QuickCard href="/head-to-head" icon={<Swords className="w-4 h-4 text-accent-emerald" />} title="H2H" />
-          <QuickCard href="/clubs" icon={<BarChart3 className="w-4 h-4 text-accent-emerald" />} title="Clubs" />
-          <QuickCard href="/players" icon={<Users className="w-4 h-4 text-accent-amber" />} title="Players" pro />
+          <QuickCard href="/clubs" icon={<CrestIcon className="w-4 h-4 text-accent-emerald" />} title="Clubs" />
+          <QuickCard href="/players" icon={<JerseyIcon className="w-4 h-4 text-accent-amber" />} title="Players" pro />
         </div>
       </main>
     </div>
@@ -506,5 +507,54 @@ function QuickCard({ href, icon, title, pro = false }: { href: string; icon: Rea
         <ChevronRight className={`w-3.5 h-3.5 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all ${pro ? 'text-accent-amber' : 'text-text-muted'}`} />
       </span>
     </Link>
+  )
+}
+
+/** Club crest — heraldic shield: top banner, double edge, central crest shape (Clubs nav icon). */
+function CrestIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="5.6" y="2.4" width="12.8" height="3" rx="1.3" fill="currentColor" />
+      <path d="M5 6.4 H19 V11.6 C19 17 15.5 20.2 12 21.8 C8.5 20.2 5 17 5 11.6 Z" fill="currentColor" />
+      <path d="M6.8 7.9 H17.2 V11.6 C17.2 16 14.5 18.7 12 20.1 C9.5 18.7 6.8 16 6.8 11.6 Z" fill="none" stroke="#0a0f1c" strokeWidth="0.85" />
+      <path d="M12 9.7 C13.7 9.7 14.7 10.9 14.7 12.5 C14.7 14.4 13 15.9 12 17.1 C11 15.9 9.3 14.4 9.3 12.5 C9.3 10.9 10.3 9.7 12 9.7 Z" fill="#0a0f1c" />
+    </svg>
+  )
+}
+
+/** Jersey back with the number 9 — Players nav icon. */
+function JerseyIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      {/* Main jersey outline */}
+      <path 
+        d="M 8.5 3.5 Q 12 5.5 15.5 3.5 L 18.8 4.8 L 21.5 11 L 18 11 L 18 21.5 L 6 21.5 L 6 11 L 2.5 11 L 5.2 4.8 Z" 
+        stroke="currentColor" 
+        strokeWidth="1.6" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        fill="none"
+      />
+      {/* Sleeve/body separator lines */}
+      <path d="M 6 11 L 6.8 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 18 11 L 17.2 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      
+      {/* Sleeve stripes */}
+      <path d="M 3.0 9.5 L 6.2 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 21.0 9.5 L 17.8 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* Number 9 centered in the middle of the body */}
+      <text 
+        x="12" 
+        y="15.8" 
+        textAnchor="middle" 
+        fontSize="8.5" 
+        fontWeight="800" 
+        fill="currentColor" 
+        fontFamily="var(--font-sans), sans-serif"
+      >
+        9
+      </text>
+    </svg>
   )
 }

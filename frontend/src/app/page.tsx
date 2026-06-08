@@ -12,7 +12,6 @@ import { Ranking } from '@phosphor-icons/react'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { AmbientParticles } from '@/components/AmbientParticles'
 import { EliteBackground } from '@/components/EliteBackground'
-import { CustomCursor } from '@/components/CustomCursor'
 
 // ─── HOOKS ───────────────────────────────────────────────────────────────────
 
@@ -83,10 +82,12 @@ CounterCard.displayName = 'CounterCard'
 function PlanFeature({ children, available = false }: { children: React.ReactNode; available?: boolean }) {
   return (
     <li className="flex items-center gap-2.5 text-sm">
-      {available
-        ? <Check className="w-4 h-4 text-accent-emerald shrink-0" />
-        : <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />}
-      <span className={available ? 'text-slate-100' : 'text-slate-450'}>{children}</span>
+      <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 ${available ? 'bg-accent-emerald/12' : 'bg-accent-amber/12'}`}>
+        {available
+          ? <Check className="w-3 h-3 text-accent-emerald" />
+          : <Crown className="w-3 h-3 text-accent-amber" />}
+      </div>
+      <span className="text-text-primary">{children}</span>
     </li>
   )
 }
@@ -176,7 +177,6 @@ function PageContent() {
   return (
     <div className="min-h-screen text-white relative">
       <EliteBackground />
-      <CustomCursor />
 
       {/* ─── NAV ─── */}
       <nav
@@ -325,12 +325,11 @@ function PageContent() {
       </section>
 
       {/* ─── PLATFORM FEATURES (ELABORATE BENTO GRID) ─── */}
-      <section id="platform" className="snap-section relative z-10 min-h-screen flex flex-col">
+      <section className="snap-section relative z-10 min-h-screen flex flex-col">
 
 
         <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col justify-center py-16">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="inline-block text-[11px] font-bold text-accent-emerald uppercase tracking-[0.2em] border border-accent-emerald/22 rounded-lg px-3.5 py-1.5 mb-6">Features</span>
+          <div id="platform" className="text-center max-w-2xl mx-auto mb-14 scroll-mt-[72px]">
             <h2 className="font-serif text-4xl lg:text-[3.4rem] font-medium tracking-[-0.02em] leading-[1.05]">
               <span className="text-[#ECEBE7]">Professional-grade</span><br />
               <span className="italic text-accent-emerald">football intelligence</span>
@@ -536,10 +535,9 @@ function PageContent() {
 
 
       {/* ─── PRICING + FOOTER (single snap section) ─── */}
-      <section id="pricing" className="snap-section relative z-10 min-h-screen flex flex-col border-t border-white/[0.05]">
+      <section className="snap-section relative z-10 min-h-screen flex flex-col border-t border-white/[0.05]">
         <div className="max-w-[1000px] mx-auto px-4 flex-1 flex flex-col justify-center py-16 w-full">
-          <div className="text-center mb-10">
-            <span className="inline-block text-[11px] font-bold text-accent-emerald uppercase tracking-[0.2em] border border-accent-emerald/22 rounded-lg px-3.5 py-1.5 mb-5">Pricing</span>
+          <div id="pricing" className="text-center mb-10 scroll-mt-[72px]">
             <h2 className="font-serif text-4xl md:text-5xl font-medium text-[#ECEBE7] tracking-[-0.02em]">
               Free today. <span className="italic text-accent-emerald">More coming.</span>
             </h2>
@@ -548,7 +546,7 @@ function PageContent() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 w-full mx-auto">
 
             {/* Free Plan */}
             <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[rgba(8,14,28,0.8)] flex flex-col">
@@ -558,7 +556,9 @@ function PageContent() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="font-mono text-[9px] font-bold text-accent-emerald/50 uppercase tracking-[0.3em] mb-1.5">Tier 01</div>
-                    <h3 className="font-serif text-3xl font-semibold text-[#ECEBE7] tracking-tight">Free</h3>
+                    <h3 className="font-serif text-2xl font-semibold text-text-primary flex items-center gap-2">
+                      Free <span className="font-light text-white/40">/</span> <span className="text-accent-emerald">Current</span> <TacticsIcon className="w-[22px] h-[22px] text-accent-emerald -translate-y-[1px]" />
+                    </h3>
                     <p className="text-[11px] text-slate-500 mt-1">Full access, no card required</p>
                   </div>
                   <span className="shrink-0 font-mono text-[9px] font-black text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/25 px-3 py-1.5 rounded-lg uppercase tracking-widest mt-1">
@@ -572,11 +572,16 @@ function PageContent() {
               </div>
               <div className="px-7 py-6 flex-1 flex flex-col justify-between">
                 <ul className="space-y-3">
-                  <PlanFeature available>27,000+ matches, 2010-11 to today</PlanFeature>
+                  <PlanFeature available><span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">~29,000</span> matches, <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">2010-11</span> to today</PlanFeature>
                   <PlanFeature available>League standings for every season</PlanFeature>
                   <PlanFeature available>Head-to-head history</PlanFeature>
                   <PlanFeature available>Club deep-dives</PlanFeature>
                   <PlanFeature available>Club IQ — AI grounded in real data</PlanFeature>
+                  <PlanFeature available>World Cup 2026 simulator &amp; Match IQ predictions</PlanFeature>
+                  <PlanFeature available><span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">5</span> major European leagues &amp; <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">98</span> clubs mapped</PlanFeature>
+                  <PlanFeature available><span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">16</span> full seasons of computed standings &amp; stats</PlanFeature>
+                  <PlanFeature available><span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">154</span> years of international matches (since <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">1872</span>) training Match IQ</PlanFeature>
+                  <PlanFeature available><span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">48</span> nations, <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">12</span> groups &amp; <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">104</span> matches for World Cup <span className="text-accent-emerald font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.45)]">2026</span></PlanFeature>
                 </ul>
                 {!isLoggedIn && (
                   <Link href="/signup" className="mt-7 inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent-emerald text-black text-[11px] font-black uppercase tracking-[0.15em] hover:bg-accent-emerald/90 transition-colors" {...interactiveProps}>
@@ -595,8 +600,8 @@ function PageContent() {
                 <div className="flex items-start justify-between gap-3 relative z-10">
                   <div>
                     <div className="font-mono text-[9px] font-bold text-accent-amber/50 uppercase tracking-[0.3em] mb-1.5">Tier 02</div>
-                    <h3 className="font-serif text-3xl font-semibold text-[#ECEBE7] tracking-tight flex items-center gap-2">
-                      <Crown className="w-5 h-5 text-accent-amber" /> Premium
+                    <h3 className="font-serif text-2xl font-semibold text-white flex items-center gap-2">
+                      <span>Baller<span className="text-accent-amber">Z</span></span> <span className="text-accent-amber">Pro</span> <Crown className="w-5 h-5 text-accent-amber" />
                     </h3>
                     <p className="text-[11px] text-slate-500 mt-1">Advanced analytics &amp; AI</p>
                   </div>
@@ -611,10 +616,14 @@ function PageContent() {
               </div>
               <div className="px-7 py-6 flex-1 flex flex-col justify-between">
                 <ul className="space-y-3">
-                  <PlanFeature>Player stats &amp; deep analysis</PlanFeature>
-                  <PlanFeature>Advanced AI analysis mode</PlanFeature>
-                  <PlanFeature>Club logos &amp; polished presentation</PlanFeature>
-                  <PlanFeature>Bookmaker odds comparison</PlanFeature>
+                  <PlanFeature>Player profiles, heatmaps &amp; deep metric analysis</PlanFeature>
+                  <PlanFeature><span className="text-accent-amber font-bold drop-shadow-[0_0_8px_rgba(230,184,78,0.45)]">Advanced AI Analyst</span> for custom tactical &amp; form queries</PlanFeature>
+                  <PlanFeature><span className="text-accent-amber font-bold drop-shadow-[0_0_8px_rgba(230,184,78,0.45)]">Real-Time Match Center</span> with live performance ratings</PlanFeature>
+                  <PlanFeature><span className="text-accent-amber font-bold drop-shadow-[0_0_8px_rgba(230,184,78,0.45)]">Live Transfer Hub</span> tracking contract details &amp; market values</PlanFeature>
+                  <PlanFeature><span className="text-accent-amber font-bold drop-shadow-[0_0_8px_rgba(230,184,78,0.45)]">Squad Builder</span> &amp; head-to-head comparison overlays</PlanFeature>
+                  <PlanFeature>Custom instant push alerts on form changes &amp; match events</PlanFeature>
+                  <PlanFeature>Dynamic odds comparison &amp; value bet finder</PlanFeature>
+                  <PlanFeature>High-resolution club crests &amp; polished presentation</PlanFeature>
                 </ul>
                 <div className="mt-7">
                   <WaitlistForm />
@@ -643,29 +652,54 @@ function PageContent() {
                 >
                   Rishi Srivastava
                 </a>
-                <a
-                  href="https://www.linkedin.com/in/rishisrivastava18"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2 hover:text-accent-emerald text-slate-400 transition-all inline-flex items-center p-1.5 hover:bg-white/5 rounded-full hover:scale-110 duration-200"
-                  title="LinkedIn Profile"
-                  {...interactiveProps}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-4 h-4"
+                <div className="flex items-center gap-1 -ml-1">
+                  <a
+                    href="https://www.linkedin.com/in/rishisrivastava18"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent-emerald text-slate-400 transition-all inline-flex items-center p-1.5 hover:bg-white/5 rounded-full hover:scale-110 duration-200"
+                    title="LinkedIn Profile"
+                    {...interactiveProps}
                   >
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                    <rect x="2" y="9" width="4" height="12" />
-                    <circle cx="4" cy="4" r="2" />
-                  </svg>
-                </a>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-4 h-4"
+                    >
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                      <rect x="2" y="9" width="4" height="12" />
+                      <circle cx="4" cy="4" r="2" />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://www.instagram.com/r.i.s.h.i._18"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent-emerald text-slate-400 transition-all inline-flex items-center p-1.5 hover:bg-white/5 rounded-full hover:scale-110 duration-200"
+                    title="Instagram Profile"
+                    {...interactiveProps}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-4 h-4"
+                    >
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                  </a>
+                </div>
               </span>
             </div>
             <p className="text-xs font-mono text-slate-200">&copy; 2026 BallerZ HQ. All rights reserved.</p>

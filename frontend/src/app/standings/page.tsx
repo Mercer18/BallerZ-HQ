@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ListOrdered, AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
+import { Ranking } from '@phosphor-icons/react'
 import { SkeletonTable } from '@/components/ui/Skeleton'
 
 interface Row {
@@ -83,7 +84,7 @@ function StandingsContent() {
       <main className="content-container">
         <div className="mb-6 pb-4 border-b border-dashed border-accent-emerald/20">
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><ListOrdered className="w-5 h-5" /></div>
+            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><Ranking className="w-5 h-5" /></div>
             <h1 className="font-serif font-semibold text-text-primary tracking-[-0.03em] leading-[0.92]" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.6rem)' }}>League Standings</h1>
           </div>
           <p className="text-sm text-text-secondary">Full tables computed from real results, every season 2010-11 to 2025-26.</p>

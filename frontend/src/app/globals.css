@@ -32,6 +32,11 @@
     --fd: var(--font-serif), Georgia, serif;   /* Fraunces — display */
     --fb: var(--font-sans), system-ui, sans-serif; /* Hanken Grotesk — UI */
     --ease:cubic-bezier(.16,1,.3,1); --r:16px;
+
+    /* Custom Cursor variables */
+    --main: #34D399;
+    --cursor-hover-bg: rgba(52, 211, 153, 0.15);
+    --cursor-down-bg: rgba(52, 211, 153, 0.3);
   }
 }
 
@@ -307,14 +312,7 @@ body {
   color: #f1f5f9;
 }
 
-/* Default cursor is custom on the WHOLE app (Cinema-magnetic + Liquid-frosted).
-   Each page should render a <CustomCursor /> instance via the layout/sidebar.
-   The * { cursor: none } selector kills the native "hand"/"text" cursors that
-   browsers apply to <a>, <button>, <input>, etc. */
-html.app-cursor body,
-html.landing-cursor body { cursor: none; }
-html.app-cursor *,
-html.landing-cursor * { cursor: none !important; }
+/* Custom cursor is managed by CustomCursor.tsx and custom body classes */
 
 /* Landing page scroll-snap: hero → features → pricing+footer */
 html.snap-landing, html.snap-landing body { height: 100%; margin: 0; }
@@ -395,35 +393,54 @@ html.snap-landing .snap-section {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CURSOR — Cinema-magnetic emerald dot + Liquid-frosted glass ring
+   NEW CUSTOM CURSOR DESIGN
    ═══════════════════════════════════════════════════════════════════════════ */
-#c-dot, #c-ring {
-  position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%;
-  top: 0; left: 0; transform: translate(-50%,-50%);
+
+/* 1. Fail-Safe: Only hide default system cursor when custom cursor is active on fine-pointer devices */
+@media (pointer: fine) {
+  body.custom-cursor-active, body.custom-cursor-active * {
+    cursor: none !important;
+  }
 }
-#c-dot {
-  width: 5px; height: 5px;
-  background: #4ade80;
-  box-shadow: 0 0 14px rgba(74,222,128,0.8);
-  transition: width .2s, height .2s, background .2s;
+
+/* 2. Main Cursor Dot */
+#cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* Crucial: Let clicks pass through the cursor element */
+  z-index: 9999999;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  background: var(--main); /* Accent color */
+  opacity: 0;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.35s, border 0.35s, opacity 0.3s;
 }
-#c-ring {
-  width: 34px; height: 34px;
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(6px);
-  border: 1.5px solid rgba(52,211,153,0.45);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
-  transition: width .3s cubic-bezier(.22,1,.36,1), height .3s cubic-bezier(.22,1,.36,1),
-              border-color .3s, background .3s;
+
+/* 3. Ready State (reveals the cursor once the mouse moves) */
+body.cursor-ready #cursor-dot {
+  opacity: 1;
 }
-#c-ring.on,
-body.hovering #c-ring {
-  width: 58px; height: 58px;
-  border-color: #4ade80;
-  background: rgba(52,211,153,0.10);
+
+/* 4. Hover State (expanded ring overlay with blur filter) */
+body.cursor-hover #cursor-dot {
+  width: 52.5px;
+  height: 52.5px;
+  background: var(--cursor-hover-bg); /* Semi-transparent color */
+  border: 1px solid var(--main);
+  backdrop-filter: blur(2px);
 }
-body.hovering #c-dot { width: 10px; height: 10px; background: #fff; }
-body.clicking #c-ring { width: 26px; height: 26px; border-color: rgba(245,158,11,0.6); }
+
+/* 5. Click/Down State (shrinks slightly upon click) */
+body.cursor-down #cursor-dot {
+  width: 36.75px;
+  height: 36.75px;
+  background: var(--cursor-down-bg);
+  border: 1px solid var(--main);
+}
 
 /* Hero adapts on short / narrow viewports instead of hiding the scroll cue:
    shrink the headline + tighten spacing so the content fits, and compact the

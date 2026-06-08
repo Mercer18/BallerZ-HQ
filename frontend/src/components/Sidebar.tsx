@@ -26,7 +26,6 @@ import { SearchOverlay } from '@/components/SearchOverlay'
 import { AnalystPanel } from '@/components/AnalystPanel'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { EliteBackground } from '@/components/EliteBackground'
-import { CustomCursor } from '@/components/CustomCursor'
 
 /**
  * Left app-shell nav. Collapsible/expandable with full names visible when expanded.
@@ -124,10 +123,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* Elite background — stadium wallpaper + drifting emerald/amber blobs + scrim + cursor spotlight */}
       <EliteBackground />
-      {/* Cinema-magnetic emerald dot + Liquid-frosted glass ring cursor */}
-      <CustomCursor />
 
       {/* Mobile Top Header */}
       {isMobile && (

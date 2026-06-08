@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BarChart3, AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 
 interface Club { id: number; name: string; league: string | null }
 interface SeasonStats {
@@ -83,7 +83,7 @@ function ClubsContent() {
       <main className="content-container">
         <div className="mb-6 pb-4 border-b border-dashed border-accent-emerald/20">
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><BarChart3 className="w-5 h-5" /></div>
+            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><CrestIcon className="w-5 h-5" /></div>
             <h1 className="font-serif font-semibold text-text-primary tracking-[-0.03em] leading-[0.92]" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.6rem)' }}>Club Deep-Dive</h1>
           </div>
           <p className="text-sm text-text-secondary">Season-by-season performance, domestic league only.</p>
@@ -163,5 +163,17 @@ function StatTile({ label, value, tone = 'default' }: {
       <div className={`text-[2.6rem] font-serif font-semibold tabular-nums tracking-[-0.02em] leading-none ${toneClass}`}>{value}</div>
       <div className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted mt-3">{label}</div>
     </div>
+  )
+}
+
+/** Club crest — heraldic shield: top banner, double edge, central crest shape (Clubs nav icon). */
+function CrestIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="5.6" y="2.4" width="12.8" height="3" rx="1.3" fill="currentColor" />
+      <path d="M5 6.4 H19 V11.6 C19 17 15.5 20.2 12 21.8 C8.5 20.2 5 17 5 11.6 Z" fill="currentColor" />
+      <path d="M6.8 7.9 H17.2 V11.6 C17.2 16 14.5 18.7 12 20.1 C9.5 18.7 6.8 16 6.8 11.6 Z" fill="none" stroke="#0a0f1c" strokeWidth="0.85" />
+      <path d="M12 9.7 C13.7 9.7 14.7 10.9 14.7 12.5 C14.7 14.4 13 15.9 12 17.1 C11 15.9 9.3 14.4 9.3 12.5 C9.3 10.9 10.3 9.7 12 9.7 Z" fill="#0a0f1c" />
+    </svg>
   )
 }

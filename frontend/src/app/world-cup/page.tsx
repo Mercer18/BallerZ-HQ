@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import { Globe, Loader2, Sparkles, MapPin, AlertCircle } from 'lucide-react'
+import { Loader2, Sparkles, MapPin, AlertCircle } from 'lucide-react'
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL
 
@@ -372,7 +372,9 @@ function WorldCupContent() {
         {/* header */}
         <div className="mb-6 pb-4 border-b border-dashed border-accent-emerald/20">
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0"><Globe className="w-5 h-5" /></div>
+            <div className="w-11 h-11 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shrink-0">
+              <span aria-hidden className="wc-trophy inline-block w-5 h-[24px] bg-current shrink-0" style={{ WebkitMaskImage: 'url(/worldcup-trophy-icon.png)', maskImage: 'url(/worldcup-trophy-icon.png)', WebkitMaskSize: '86% 100%', maskSize: '86% 100%', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }} />
+            </div>
             <h1 className="font-serif font-semibold text-text-primary tracking-[-0.03em] leading-[0.92]" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.6rem)' }}>World Cup 2026</h1>
           </div>
           <p className="text-sm text-text-secondary">48 nations · 12 groups · Canada, Mexico &amp; USA. Predictions powered by <span className="text-accent-gold font-medium">Match IQ</span> — an Elo + Poisson model trained on 150 years of international results.</p>

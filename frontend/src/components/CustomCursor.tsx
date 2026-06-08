@@ -1,79 +1,145 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 
 /**
- * Elite cursor — Cinema-magnetic emerald dot + Liquid-frosted glass ring.
- * - The dot tracks the pointer exactly.
- * - The ring trails with subtle lag and grows over clickable elements.
- * - Adds `html.app-cursor` so globals.css can hide the native cursor.
- * - Disabled on touch / coarse-pointer devices (native cursor stays).
+ * Custom cursor component.
+ * Implements mouse tracking, touch check fail-safe, click shrinking, and hover delegation.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null)
-  const ringRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (window.matchMedia('(pointer: coarse)').matches) return
 
-    const dot = dotRef.current
-    const ring = ringRef.current
-    if (!dot || !ring) return
+    let cursorX = -999, cursorY = -999;
+    let cursorInitialized = false;
+    let isTouchUser = false;
+    let lastTouchTime = 0;
 
-    document.documentElement.classList.add('app-cursor')
+    // 1. Mobile/Touch Detection: Instantly restore native touch behavior on mobile/tablet
+    const handleTouch = () => {
+      isTouchUser = true;
+      lastTouchTime = Date.now();
+      document.body.classList.remove('cursor-ready', 'custom-cursor-active');
+      const cursorDot = dotRef.current;
+      if (cursorDot) {
+        cursorDot.style.display = 'none';
+      }
+    };
 
-    let mx = window.innerWidth / 2
-    let my = window.innerHeight / 2
-    let rx = mx
-    let ry = my
-    let raf = 0
+    window.addEventListener('touchstart', handleTouch, { passive: true });
+    window.addEventListener('touchmove', handleTouch, { passive: true });
+    window.addEventListener('touchend', handleTouch, { passive: true });
 
-    const onMove = (e: MouseEvent) => {
-      mx = e.clientX
-      my = e.clientY
-      dot.style.left = mx + 'px'
-      dot.style.top = my + 'px'
-    }
-    const onOver = (e: MouseEvent) => {
-      const el = e.target as HTMLElement | null
-      const interactive = !!el?.closest(
-        'a, button, input, textarea, select, label, [role="button"], .glass-pill, .btn-primary, .btn-accent, .btn-ghost, .card, .card-terminal'
-      )
-      document.body.classList.toggle('hovering', interactive)
-    }
-    const onDown = () => document.body.classList.add('clicking')
-    const onUp = () => document.body.classList.remove('clicking')
-
-    const loop = () => {
-      rx += (mx - rx) * 0.18
-      ry += (my - ry) * 0.18
-      ring.style.left = rx + 'px'
-      ring.style.top = ry + 'px'
-      raf = requestAnimationFrame(loop)
+    function shouldIgnoreMouse() {
+      return isTouchUser || (Date.now() - lastTouchTime < 500);
     }
 
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseover', onOver)
-    window.addEventListener('mousedown', onDown)
-    window.addEventListener('mouseup', onUp)
-    loop()
+    // 2. Track Mouse Movement
+    function updateCursorPos(e: MouseEvent) {
+      if (Date.now() - lastTouchTime < 500) return;
+      if (!e || typeof e.clientX !== 'number' || typeof e.clientY !== 'number' || isNaN(e.clientX) || isNaN(e.clientY)) return;
+      
+      if (isTouchUser) {
+        isTouchUser = false;
+        const cursorDot = dotRef.current;
+        if (cursorDot) {
+          cursorDot.style.display = 'block';
+        }
+      }
+      
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+      if (!cursorInitialized) {
+        cursorInitialized = true;
+      }
+      document.body.classList.add('cursor-ready', 'custom-cursor-active');
+    }
 
+    window.addEventListener('mousemove', updateCursorPos);
+    window.addEventListener('mouseenter', updateCursorPos);
+    
+    const handleMouseLeave = () => {
+      document.body.classList.remove('cursor-ready', 'custom-cursor-active');
+    };
+    window.addEventListener('mouseleave', handleMouseLeave);
+
+    // 3. Coordinate Update Loop (uses GPU-accelerated translate3d for high framerate rendering)
+    let rafId: number;
+    function tickCursor() {
+      if (cursorInitialized && !shouldIgnoreMouse()) {
+        if (isNaN(cursorX) || isNaN(cursorY)) {
+          cursorX = window.innerWidth / 2;
+          cursorY = window.innerHeight / 2;
+        }
+        const cursorDot = dotRef.current;
+        if (cursorDot) {
+          cursorDot.style.transform = `translate3d(${cursorX}px,${cursorY}px,0) translate3d(-50%,-50%,0)`;
+        }
+      }
+      rafId = requestAnimationFrame(tickCursor);
+    }
+    tickCursor();
+
+    // 4. Click Tracking (shrink dot on mousedown)
+    const handleMouseDown = (e: MouseEvent) => {
+      if (shouldIgnoreMouse()) return;
+      if (e && typeof e.clientX === 'number' && typeof e.clientY === 'number' && !isNaN(e.clientX) && !isNaN(e.clientY)) {
+        cursorX = e.clientX;
+        cursorY = e.clientY;
+      }
+      document.body.classList.add('cursor-down');
+    };
+    const handleMouseUp = () => {
+      if (shouldIgnoreMouse()) return;
+      document.body.classList.remove('cursor-down');
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    // 5. Interactive Hover Event Delegation (scale on links/buttons/interactive tags)
+    const hoverSelectors = 'a, button, [role="button"], .btn, .project-link, .contact-link, .theme-toggle, #themeBtn, .forage-card';
+    
+    const handleMouseOver = (e: MouseEvent) => {
+      if (shouldIgnoreMouse()) return;
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest && target.closest(hoverSelectors)) {
+        document.body.classList.add('cursor-hover');
+      }
+    };
+    const handleMouseOut = (e: MouseEvent) => {
+      if (shouldIgnoreMouse()) return;
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest && target.closest(hoverSelectors)) {
+        document.body.classList.remove('cursor-hover');
+      }
+    };
+
+    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mouseout', handleMouseOut);
+
+    // Cleanup
     return () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseover', onOver)
-      window.removeEventListener('mousedown', onDown)
-      window.removeEventListener('mouseup', onUp)
-      cancelAnimationFrame(raf)
-      document.documentElement.classList.remove('app-cursor')
-      document.body.classList.remove('hovering', 'clicking')
-    }
-  }, [])
+      window.removeEventListener('touchstart', handleTouch);
+      window.removeEventListener('touchmove', handleTouch);
+      window.removeEventListener('touchend', handleTouch);
+      window.removeEventListener('mousemove', updateCursorPos);
+      window.removeEventListener('mouseenter', updateCursorPos);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mouseout', handleMouseOut);
+      cancelAnimationFrame(rafId);
+      document.body.classList.remove('cursor-ready', 'custom-cursor-active', 'cursor-hover', 'cursor-down');
+    };
+  }, [pathname])
 
   return (
-    <>
-      <div ref={ringRef} id="c-ring" aria-hidden="true" />
-      <div ref={dotRef} id="c-dot" aria-hidden="true" />
-    </>
+    <div ref={dotRef} id="cursor-dot" aria-hidden="true" />
   )
 }

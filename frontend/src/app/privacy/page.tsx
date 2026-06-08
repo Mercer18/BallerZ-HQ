@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { EliteBackground } from '@/components/EliteBackground'
-import { CustomCursor } from '@/components/CustomCursor'
 import { AnimatedLogo } from '@/components/AnimatedLogo'
 import { ArrowLeft, Shield, Lock, Eye, CheckCircle2 } from 'lucide-react'
 
@@ -10,7 +9,6 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen text-white relative font-sans bg-[#060b18]">
       <EliteBackground />
-      <CustomCursor />
 
       {/* Navigation Header */}
       <nav

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Users, Crown, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
+import { Crown, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { SkeletonTable } from '@/components/ui/Skeleton'
 import { apiFetch } from '@/lib/api'
 
@@ -106,7 +106,7 @@ function PlayersContent() {
       <main className="content-container">
         <div className="mb-6 pb-4 border-b border-dashed border-accent-amber/20">
           <div className="flex items-center gap-4 mb-2 flex-wrap">
-            <div className="w-11 h-11 rounded-xl bg-accent-amber/10 border border-accent-amber/20 flex items-center justify-center text-accent-amber shrink-0"><Users className="w-5 h-5" /></div>
+            <div className="w-11 h-11 rounded-xl bg-accent-amber/10 border border-accent-amber/20 flex items-center justify-center text-accent-amber shrink-0"><JerseyIcon className="w-5 h-5" /></div>
             <h1 className="font-serif font-semibold text-text-primary tracking-[-0.03em] leading-[0.92] flex items-center gap-3" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.6rem)' }}>
               Player Stats
               <span className="inline-flex items-center gap-1 bg-accent-amber/10 border border-accent-amber/30 rounded-full px-2.5 py-1 font-mono text-[10px] font-bold text-accent-amber uppercase tracking-wider self-center">
@@ -203,5 +203,42 @@ export default function PlayersPage() {
     <Suspense fallback={<div className="page-container app-bg pt-14 items-center justify-center h-screen"><Loader2 className="w-6 h-6 text-accent-emerald animate-spin" /></div>}>
       <PlayersContent />
     </Suspense>
+  )
+}
+
+/** Jersey back with the number 9 — Players nav icon. */
+function JerseyIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      {/* Main jersey outline */}
+      <path 
+        d="M 8.5 3.5 Q 12 5.5 15.5 3.5 L 18.8 4.8 L 21.5 11 L 18 11 L 18 21.5 L 6 21.5 L 6 11 L 2.5 11 L 5.2 4.8 Z" 
+        stroke="currentColor" 
+        strokeWidth="1.6" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        fill="none"
+      />
+      {/* Sleeve/body separator lines */}
+      <path d="M 6 11 L 6.8 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 18 11 L 17.2 5.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      
+      {/* Sleeve stripes */}
+      <path d="M 3.0 9.5 L 6.2 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M 21.0 9.5 L 17.8 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* Number 9 centered in the middle of the body */}
+      <text 
+        x="12" 
+        y="15.8" 
+        textAnchor="middle" 
+        fontSize="8.5" 
+        fontWeight="800" 
+        fill="currentColor" 
+        fontFamily="var(--font-sans), sans-serif"
+      >
+        9
+      </text>
+    </svg>
   )
 }
